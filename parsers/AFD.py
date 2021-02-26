@@ -3,7 +3,8 @@ import copy
 class AFD():
     def __init__(self):
         self.enums = BuilderEnum
-        self.status = True
+        
+
     def afd_parser(self, tokens):
         print("Hi, im being passed this tokens! \n", tokens)
         if not self.isCorrect(tokens):
