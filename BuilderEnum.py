@@ -2,7 +2,7 @@ from enum import Enum
 
 class BuilderEnum(Enum):
     #del lenguaje
-    SYMBOL = "symbol"
+    SYMBOL = "SYMBOL"
     KLEENE = "*"
     PLUS = "+"
     OR = "|"
