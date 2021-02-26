@@ -1,7 +1,7 @@
 from Builder import *
 from Parser import Parser
 #should return tokens
-builder = Builder("a|b")
+builder = Builder("(a|b)")
 #paso de generar tokens
 builder.generator()
 #array de tokens devuelto por
