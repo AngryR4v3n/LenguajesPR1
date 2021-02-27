@@ -6,7 +6,6 @@ class Builder():
     def __init__(self, instruction):
         self.instruction = iter(instruction)
         self.next_char()
-        self.status = True
         self.tokensArr =[]
         self.operators = ["*", "+", "|"]
         self.parens = ["(", ")"]
@@ -59,17 +58,4 @@ class Builder():
             self.next_char()
 
                 
-    def parenthesis_checker(self):
-        self.next_char()
-        
-        while self.char != None:
-
-            if self.char == ")":
-                self.status = True 
-                return self.status
-
-            self.next_char()
-        
-        #si se sale del while por none, esta mal porque nunca encontro un )
-        self.status = False
     
