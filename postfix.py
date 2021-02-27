@@ -1,7 +1,14 @@
+import sys  
+import os
 from BuilderEnum import BuilderEnum
+sys.path.append(os.path.abspath(os.path.join("parsers")))
+from stack import Stack
+"""
+Basado en https://www.free-online-calculator-use.com/infix-to-postfix-converter.html#
+"""
 class Postfixer:
     def __init__(self):
-        self.array = []
+        self.stack = Stack()
         self.output = []
         self.enums = BuilderEnum
         self.precedence = {
@@ -16,28 +23,14 @@ class Postfixer:
             self.enums.OR.value,
         ]
     
-    def is_empty(self):
-        if len(self.array) == 0:
-            return True
-        else:
-            return False
-
-    def peek(self):
-        return self.array[-1]
-
-    def pop(self):
-        if not self.is_empty():
-            return self.array.pop()
-        else: 
-            return "-1"
-
+    
     def is_operand(self, ch):
         return ch.isalpha()
 
     def check_precedence(self, i):
         try:
             a = self.precedence[i]
-            b = self.precedence[self.peek()]
+            b = self.precedence[self.stack.peek()]
         except KeyError:
             return False
 
@@ -54,33 +47,33 @@ class Postfixer:
 
             elif ch == self.enums.LEFT_PARENS.value:
                 self.checkOperands = 0
-                self.array.append(ch)
+                self.stack.add(ch)
 
             elif ch == ")":
                 self.checkOperands = 0
-                while ((not self.is_empty()) and (self.peek() != self.enums.LEFT_PARENS.value)):
-                    a = self.pop()
+                while ((not self.stack.is_empty()) and (self.stack.peek() != self.enums.LEFT_PARENS.value)):
+                    a = self.stack.pop()
                     self.output.append(a)
 
-                if (not self.is_empty() and self.peek() != self.enums.LEFT_PARENS.value):
+                if (not self.stack.is_empty() and self.stack.peek() != self.enums.LEFT_PARENS.value):
                     print("ERR: Incorrect syntax")
                     exit(-1)
                 else:
-                    self.pop()
+                    self.stack.pop()
             
             elif ch in self.operators:
                 self.checkOperands = 0
-                while(not self.is_empty() and self.check_precedence(ch)):
+                while(not self.stack.is_empty() and self.check_precedence(ch)):
                     
-                    self.output.append(self.pop())
+                    self.output.append(self.stack.pop())
 
-                self.array.append(ch)
+                self.stack.add(ch)
             #non supported char
             else:
                 print("ERR: Incorrect syntax")
                 exit(-1)
-        """                
-        while not self.is_empty():
-            self.output.append(self.pop())
-        """
+                        
+        while not self.stack.is_empty():
+            self.output.append(self.stack.pop())
+        
         return self.output
