@@ -60,41 +60,37 @@ class Automata:
         
         #obtenemos las keys del automata
         automataStates = list(self.fn.keys())
-        
+
         #si ya tenemos datos ingresados;
         if len(automataStates) > 0:
             for key in keyStates:
                 # revisamos si no existe una regla
                 # si no existe, agregamos dentro de un array la transicion
-                
-                
                 if key not in automataStates:
                     self.fn[key] = state_neighbors[key]
                 # si existe, extendemos el array existente al nuevo valor
                 
                 else:
-                
-                    self.fn[key].extend(state_neighbors[key])
-                            
-                
+                    #tenemos que revisar ahora si no hay simbolos repetidos
+                    #print("ola",self.fn[key],"adios", state_neighbors[key])
+                    if state_neighbors[key][0] not in self.fn[key]:
+                        self.fn[key].extend(state_neighbors[key])   
         else:   
             for key in keyStates:
                 self.fn[key] = state_neighbors[key]
-
-
-
         
         #->loop a los simbolos introducidos por el nuevo estado
         # si no existe, le hacemos extend al array.
         for key in keyStates:     
-            if state_neighbors[key] not in self.language:
-                self.language.extend(state_neighbors[key])
-        
+            #necesitamos revisar las llaves
+            for keys in state_neighbors[key]:
+                #si no esta en el mensaje, lo agregamos.
+                if keys not in self.language:
+                    self.language.extend(keys)
+            
                 
-        
-
     def __repr__(self):
-        return f"<Automata fn: {self.fn} with language: {self.language}>"
+        return f"<Automata fn: {self.fn} with language: {self.language} states: {self.states}>"
         
         
 

@@ -33,7 +33,7 @@ class Thompson:
                 state = State(self.stateCounter, {self.stateCounter + 1: [currentToken.get_value()]}, True, False)
                 self.stateCounter += 1
                 
-                state2 = State(0, {}, False, True)
+                state2 = State(self.stateCounter, {}, False, True)
                 self.stateCounter += 1
                 
                 
@@ -42,7 +42,7 @@ class Thompson:
                 
                 au.add_state(state)
                 au.add_state(state2)
-                
+                #print(au)
                 self.opStack.add(au)
                 
                 
@@ -58,15 +58,12 @@ class Thompson:
 
                     nfa1 = self.opStack.pop()
 
+                    
+
                     #armado de nfa base.
                     initialState = State(self.stateCounter, {}, True, False)
                     self.stateCounter += 1
-                    initialState.set_neighbors(
-                        {
-                            nfa2.get_initial_state().get_id(): ["&"],
-                            nfa1.get_initial_state().get_id(): ["&"]
-                        }   
-                    )
+
                     
                     finalState = State(self.stateCounter, {}, False, True)
                     self.stateCounter += 1
@@ -76,21 +73,47 @@ class Thompson:
                     final2.set_neighbors({finalState.get_id(): ["&"]})
                     final1 = nfa1.get_final_state()
                     final1.set_neighbors({finalState.get_id(): ["&"]})
+                    
+                    nfa2.get_final_state().set_final(False)
+                    nfa1.get_final_state().set_final(False)
 
+
+
+                    initialState.set_neighbors({
+                        nfa1.get_initial_state().get_id():["&"],
+                        nfa2.get_initial_state().get_id():["&"]
+                    })
+
+                    #Estado inicial de nfa 2 y nfa1 dejan de ser inicales
+                    nfa1.get_initial_state().set_initial(False)
+                    nfa2.get_initial_state().set_initial(False)
+
+                    
                     #Agregamos estados actualizados a los nfa viejos.
-                    nfa2.add_state(final2)
-                    nfa1.add_state(final1)
+                    print("------------------")
+                    
 
-                    print(nfa2)
-                    print(nfa1)
-                    #nfa2.update_fn(final2.get_id())
+                    #unificamos los nfa
+                    or_nfa = Automata([], [], None, {})
+                    # me devuelve un array de States.
+                    or_nfa.add_state(initialState)
+                    or_nfa.add_state(finalState)
+                    nfa2_states = nfa2.get_states()
+                    
+                    for state in nfa2_states:
+                        #agregamos esto al automata final
+                        or_nfa.add_state(state)
+                    nfa1_states = nfa1.get_states()
+                    
+                    for state in nfa1_states:
+                        or_nfa.add_state(state)
+                    
+                    print(or_nfa)
+
 
                     
                     
-                    
-                    
-                    
-                    #nfa1.update_fn(final1.get_id())
+                
                    
                 
                     
@@ -121,7 +144,6 @@ class Thompson:
 
     
 
-        
         
     def is_subset(self, arr1, arr2):
         for i in range(0, len(arr2)):
