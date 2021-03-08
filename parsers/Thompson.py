@@ -5,7 +5,7 @@ import sys
 import os
 #import dentro de la carpeta parsers
 sys.path.append(os.path.abspath(os.path.join("parsers")))
-from State import *
+from Transition import *
 from stack import Stack
 from Automata import Automata
 class Thompson:
@@ -14,10 +14,8 @@ class Thompson:
         self.stateCounter = 0
         self.opStack = Stack()    
         self.nfa = []
-        self.automata = None
     
     def evalPostfix(self, tokens):
-        self.automata = Automata([],[], None, {})
         """
         Definimos las reglas segun: 
         https://medium.com/swlh/visualizing-thompsons-construction-algorithm-for-nfas-step-by-step-f92ef378581b
@@ -26,135 +24,104 @@ class Thompson:
         for i in range(0, len(tokens)):
             
             currentToken = tokens[i]
-
+            
             if currentToken.get_type() == "SYMBOL" and currentToken.get_value() != "&":
+                
+
+                
                 #Regla #2: 
-                
-                state = State(self.stateCounter, {self.stateCounter + 1: [currentToken.get_value()]}, True, False)
+                #0 -> {1: "B"}
+                trans1 = Transition(start=self.stateCounter, transition=currentToken.get_value(), end=self.stateCounter+1)
+                self.stateCounter += 1
+                #1 -> {} y es final.
+                trans2 = Transition(start=self.stateCounter, transition=None, end=None)
                 self.stateCounter += 1
                 
-                state2 = State(self.stateCounter, {}, False, True)
-                self.stateCounter += 1
-                
-                
-                
-                au = Automata([], [], None, {})
-                
-                au.add_state(state)
-                au.add_state(state2)
+                #estados, alfabeto, estado inicial, estado final, funcion de transicion
+                au = Automata([], [], trans1.get_start(), trans2.get_start(), [])
+                au.add_state(trans1)
+                au.add_state(trans2)
                 #print(au)
                 self.opStack.add(au)
                 
-                
 
-            #probablemente sea una operacion
+            #sea una operacion
             elif currentToken.get_type() != "SYMBOL":
+
                 #regla #3: OR
                 if currentToken.get_type() == "|":
-                    
                     #sacamos del stack
                     nfa2 = self.opStack.pop()
                     
-
                     nfa1 = self.opStack.pop()
 
-                    
-
                     #armado de nfa base.
-                    initialState = State(self.stateCounter, {}, True, False)
+                    #TRANSICIONES
+                    transitionInitial1 = Transition(start=self.stateCounter, transition="&", end=nfa1.get_initial_state())
+                    transitionInitial2 = Transition(start=self.stateCounter, transition="&", end=nfa2.get_initial_state())
+                    self.stateCounter += 1
+                    transitionFinal1 = Transition(start=nfa1.get_final_state(), transition="&", end=self.stateCounter)
+                    transitionFinal2 = Transition(start=nfa2.get_final_state(), transition="&", end=self.stateCounter)
                     self.stateCounter += 1
 
-                    
-                    finalState = State(self.stateCounter, {}, False, True)
-                    self.stateCounter += 1
-
-                    #Estado final de nfa 2 y nfa1 dejan de ser finales
-                    final2 = nfa2.get_final_state() #devuelve estado que hacemos query
-                    final2.set_neighbors({finalState.get_id(): ["&"]})
-                    final1 = nfa1.get_final_state()
-                    final1.set_neighbors({finalState.get_id(): ["&"]})
-                    
-                    nfa2.get_final_state().set_final(False)
-                    nfa1.get_final_state().set_final(False)
-
-
-
-                    initialState.set_neighbors({
-                        nfa1.get_initial_state().get_id():["&"],
-                        nfa2.get_initial_state().get_id():["&"]
-                    })
-
-                    #Estado inicial de nfa 2 y nfa1 dejan de ser inicales
-                    nfa1.get_initial_state().set_initial(False)
-                    nfa2.get_initial_state().set_initial(False)
-
-                    
-                    #Agregamos estados actualizados a los nfa viejos.
-                    print("------------------")
-                    
-
+                    #Sacamos todas las transiciones del elem1 y elem2 
+                    arr2 = nfa2.arr_states() #array
+                    arr1 = nfa1.arr_states() #array
                     #unificamos los nfa
-                    or_nfa = Automata([], [], None, {})
+                    unifiedArray = arr2 + arr1
+                    newTrans = [transitionInitial1, transitionInitial2, transitionFinal1, transitionFinal2]
+                    finalTrans = unifiedArray + newTrans    
+ 
+                    or_nfa = Automata([], [], transitionInitial1.get_start(), transitionFinal1.get_end(), [])
                     # me devuelve un array de States.
-                    or_nfa.add_state(initialState)
-                    or_nfa.add_state(finalState)
-                    nfa2_states = nfa2.get_states()
-                    
-                    for state in nfa2_states:
-                        #agregamos esto al automata final
-                        or_nfa.add_state(state)
-                    nfa1_states = nfa1.get_states()
-                    
-                    for state in nfa1_states:
-                        or_nfa.add_state(state)
+                    for transition in finalTrans:
+                        if(transition.get_transition() != None and transition.get_end() != None):
+                            or_nfa.add_state(transition)
                     
                     print(or_nfa)
-
+                    self.opStack.add(or_nfa)
+                
+                #REGLA KLEENE
+                if currentToken.get_type() == "*":
+                    nfa = self.opStack.pop()
+                    
+                    #encontramos estados finales e iniciales:
+                    final = nfa.get_final_state()        
+                    initial = nfa.get_initial_state()
+                    #transicion de final a inicial del nfa preexistente
+                    finalMod = Transition(start=final, transition="&", end=initial)
 
                     
+                    nfa.add_state(finalMod)
+
+                    initialState = Transition(self.stateCounter, "&", initial)
                     
-                
-                   
-                
+                    self.stateCounter += 1
                     
-
-
-
-
-                
+                    finalState = Transition(self.stateCounter, None, None)
+                    initialEnd = Transition(self.stateCounter-1, "&", nfa.get_initial_state())
+                    initialToFinal = Transition(start=initialState.get_start(), transition="&", end=finalState.get_start())       
+                    #transicion de nfa final a final de nuevo nfa
+                    finalTofinal = Transition(start=final, transition="&", end=finalState.get_start())
+                    nfa.add_state(finalTofinal)
+                    self.stateCounter += 1
                     
-                
+                    
+                    kleene_nfa = Automata([], [], initial, final, [])
+                    arr1 = nfa.arr_states()
+                    unifiedArray = arr1
+                    newTrans = [initialEnd, finalState, initialToFinal]
+                    finalTrans = unifiedArray + newTrans
+                    
+                    for transition in finalTrans:
+                        if(transition.get_transition() != None and transition.get_end() != None):
+                            kleene_nfa.add_state(transition)
+
+                    print(kleene_nfa)
+                    self.opStack.add(kleene_nfa)
 
 
 
-
-            """
-            #Regla 1: Expresion & = epsilon
-            if currentToken.get_type() == "SYMBOL" and currentToken.get_value() == "&":
-                #creamos estado inicial.
-                state = State({len(self.subNfa):{"neighbors": [len(self.subNfa)+1], "transition": "&"}}, False, False)
-                state2 = State({len(self.subNfa):{"neighbors": [], "transition": ""}}, False, True)
-                self.subNfa.append(state)
-                self.subNfa.append(state2)
-            #Regla 2: Expresion con simbolo 
-            elif currentToken.get_type() == "SYMBOL" and currentToken.get_value() != "&":
-                
-
-            """
-
-    
-
-        
-    def is_subset(self, arr1, arr2):
-        for i in range(0, len(arr2)):
-            for j in range(0, len(arr1)):
-                if(arr2[i] == arr1[j]):
-                    break
-
-            if(j == len(arr1)):
-                return False
-                
-        return True
 
     def thompson_parser(self, tokens):
         print("Hi, im being passed this tokens! \n", tokens)
