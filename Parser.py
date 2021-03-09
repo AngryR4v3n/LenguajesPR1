@@ -5,6 +5,7 @@ sys.path.append(os.path.abspath(os.path.join("parsers")))
 
 from AFD import AFD
 from Thompson import Thompson
+from PowerSetConstruction import PowerSet
 from BuilderEnum import BuilderEnum
 import copy
 class Parser:
@@ -68,8 +69,9 @@ def get_parser(format):
     elif format == "Thompson":
         thompson = Thompson()
         return thompson.thompson_parser
-    elif format == "subset":
-        return subset
+    elif format == "Powerset":
+        powerSet = PowerSet()
+        return powerSet.build_automata()
     else:
         raise ValueError(format)    
 

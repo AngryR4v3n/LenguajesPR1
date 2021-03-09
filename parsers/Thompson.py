@@ -1,13 +1,12 @@
 
 
 from BuilderEnum import BuilderEnum
-import sys  
-import os
+
 #import dentro de la carpeta parsers
-sys.path.append(os.path.abspath(os.path.join("parsers")))
 from Transition import *
 from stack import Stack
 from Automata import Automata
+from helper import * 
 class Thompson:
     def __init__(self):
         #array of states
@@ -103,7 +102,7 @@ class Thompson:
                     finalState = Transition(self.stateCounter, None, None)
                     #transicion de nfa final a final de nuevo nfa
                     finalTofinal = Transition(start=final, transition="&", end=finalState.get_start())
-                    nfa.add_state(finalTofinal)
+                    
                     self.stateCounter += 1
                     
                     
@@ -138,7 +137,7 @@ class Thompson:
                     finalState = Transition(self.stateCounter, None, None)
                     #transicion de nfa final a final de nuevo nfa
                     finalTofinal = Transition(start=final, transition="&", end=finalState.get_start())
-                    nfa.add_state(finalTofinal)
+                    
                     self.stateCounter += 1
                     
                     
@@ -189,14 +188,16 @@ class Thompson:
                     print("DONE CONCAT")
                     self.opStack.add(merge_nfa)
 
-        print(self.opStack)
-
+        #opstack is ready to be exported
+        return self.opStack
 
 
 
     def thompson_parser(self, tokens):
         print("Hi, im being passed this tokens! \n", tokens)
-        self.evalPostfix(tokens)
+        nfa = self.evalPostfix(tokens)
+        #export a imagen
+        export_chart(nfa.pop())
         
     
         
