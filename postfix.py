@@ -14,6 +14,7 @@ class Postfixer:
         self.precedence = {
             self.enums.KLEENE.value: 3,
             self.enums.PLUS.value: 2,
+            self.enums.CONCAT.value: 1,
             self.enums.OR.value: 1,
         }
         self.checkOperands = 0
@@ -21,16 +22,18 @@ class Postfixer:
             self.enums.KLEENE.value, 
             self.enums.PLUS.value,
             self.enums.OR.value,
+            self.enums.CONCAT.value
         ]
     
     
     def is_operand(self, ch):
-        return ch.isalpha()
+        return ch.isalnum()
 
     def check_precedence(self, i):
         try:
             a = self.precedence[i]
             b = self.precedence[self.stack.peek()]
+            return True if a <= b else False
         except KeyError:
             return False
 

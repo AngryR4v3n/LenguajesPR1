@@ -13,6 +13,12 @@ class Transition:
     def get_end(self):
         return self.end
 
+    def set_initial(self, number):
+        self.start = number
+
+    def set_end(self, number):
+        self.end = number
+
     def __repr__(self):
         return f'<Transition from: {self.start} to {self.end} through {self.transition}>'
     

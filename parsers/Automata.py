@@ -39,6 +39,9 @@ class Automata:
         #extraemos los ids
         if trans.get_start() not in self.states:
             self.states.append(trans.get_start())
+
+        if trans.get_end() not in self.states:
+            self.states.append(trans.get_end())
         #agregamos a las funciones
         self.fn.append(trans)
         #agregamos a lenguaje

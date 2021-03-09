@@ -21,3 +21,6 @@ class Stack:
 
     def length(self):
         return len(self.array)
+
+    def __repr__(self):
+        return f'<Stack with {self.array}'

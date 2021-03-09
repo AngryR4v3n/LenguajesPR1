@@ -7,7 +7,7 @@ class Builder():
         self.instruction = iter(instruction)
         self.next_char()
         self.tokensArr =[]
-        self.operators = ["*", "+", "|"]
+        self.operators = ["*", "+", "|", "."]
         self.parens = ["(", ")"]
         self.enums = BuilderEnum
         
@@ -45,6 +45,8 @@ class Builder():
                     token = Token.Tokenizer(type_t=self.enums.PLUS.value, value=None)
                 elif self.char == self.enums.OR.value:
                     token = Token.Tokenizer(type_t=self.enums.OR.value, value=None)
+                elif self.char == self.enums.CONCAT.value:
+                    token = Token.Tokenizer(type_t=self.enums.CONCAT.value, value=None)
 
             #caso 3: tenemos un token de tipo parens
             elif(self.char in self.parens):

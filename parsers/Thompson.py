@@ -42,6 +42,7 @@ class Thompson:
                 au.add_state(trans1)
                 au.add_state(trans2)
                 #print(au)
+                print("DONE SYMB")
                 self.opStack.add(au)
                 
 
@@ -75,10 +76,11 @@ class Thompson:
                     or_nfa = Automata([], [], transitionInitial1.get_start(), transitionFinal1.get_end(), [])
                     # me devuelve un array de States.
                     for transition in finalTrans:
-                        if(transition.get_transition() != None and transition.get_end() != None):
+                        if(transition.get_transition() != None):
                             or_nfa.add_state(transition)
                     
-                    print(or_nfa)
+                    #print(or_nfa)
+                    print("DONE OR")
                     self.opStack.add(or_nfa)
                 
                 #REGLA KLEENE
@@ -93,32 +95,101 @@ class Thompson:
 
                     
                     nfa.add_state(finalMod)
-
-                    initialState = Transition(self.stateCounter, "&", initial)
-                    
+                    #estado inicial de nfa preexistente a nuevo estado de trans
+                    initialState = Transition(self.stateCounter, "&",  initial)
+                    initialEnd = Transition(initialState.get_start(), "&", final)
                     self.stateCounter += 1
                     
                     finalState = Transition(self.stateCounter, None, None)
-                    initialEnd = Transition(self.stateCounter-1, "&", nfa.get_initial_state())
-                    initialToFinal = Transition(start=initialState.get_start(), transition="&", end=finalState.get_start())       
                     #transicion de nfa final a final de nuevo nfa
                     finalTofinal = Transition(start=final, transition="&", end=finalState.get_start())
                     nfa.add_state(finalTofinal)
                     self.stateCounter += 1
                     
                     
-                    kleene_nfa = Automata([], [], initial, final, [])
+                    kleene_nfa = Automata([], [], initialState.get_start(), finalState.get_start(), [])
                     arr1 = nfa.arr_states()
                     unifiedArray = arr1
-                    newTrans = [initialEnd, finalState, initialToFinal]
+                    newTrans = [initialState,initialEnd, finalState, finalTofinal]
                     finalTrans = unifiedArray + newTrans
                     
                     for transition in finalTrans:
-                        if(transition.get_transition() != None and transition.get_end() != None):
+                        if(transition.get_transition() != None):
                             kleene_nfa.add_state(transition)
 
-                    print(kleene_nfa)
+                    print("DONE KLEENE")
                     self.opStack.add(kleene_nfa)
+
+                if currentToken.get_type() == "+":
+                    nfa = self.opStack.pop()
+                    
+                    #encontramos estados finales e iniciales:
+                    final = nfa.get_final_state()        
+                    initial = nfa.get_initial_state()
+                    #transicion de final a inicial del nfa preexistente
+                    finalMod = Transition(start=final, transition="&", end=initial)
+
+                    
+                    nfa.add_state(finalMod)
+                    #estado inicial de nfa preexistente a nuevo estado de trans
+                    initialState = Transition(self.stateCounter, "&",  initial)
+                    self.stateCounter += 1
+                    
+                    finalState = Transition(self.stateCounter, None, None)
+                    #transicion de nfa final a final de nuevo nfa
+                    finalTofinal = Transition(start=final, transition="&", end=finalState.get_start())
+                    nfa.add_state(finalTofinal)
+                    self.stateCounter += 1
+                    
+                    
+                    plus_nfa = Automata([], [], initialState.get_start(), finalState.get_start(), [])
+                    arr1 = nfa.arr_states()
+                    unifiedArray = arr1
+                    newTrans = [initialState, finalState, finalTofinal]
+                    finalTrans = unifiedArray + newTrans
+                    
+                    for transition in finalTrans:
+                        if(transition.get_transition() != None):
+                            plus_nfa.add_state(transition)
+
+                    print("DONE PLUS")
+                    self.opStack.add(plus_nfa)
+
+
+                if currentToken.get_type() == ".":
+                    nfa2 = self.opStack.pop()
+                    nfa1 = self.opStack.pop()
+
+                    initial = nfa2.get_initial_state()
+                    final = nfa1.get_final_state()
+                    #print("INIT", initial)
+                    #print("FINAL", final)
+                    for state in nfa2.arr_states():
+                        #print("STATE", state)
+                        if (state.get_start() == initial):
+                            print("converting", state, "to ", final)
+                            state.set_initial(final)
+
+                    for state in nfa1.arr_states():
+                        if(state.get_start() == final):
+                            print("converting", state, "to ", final)
+                            state.set_initial(initial)
+                    merge_nfa = Automata([], [], nfa1.get_initial_state(), nfa2.get_final_state(), [])
+
+                    opsNfa2 = nfa2.arr_states()
+                    opsNfa1 = nfa1.arr_states()
+
+                    merged = opsNfa2 + opsNfa1
+
+                    for transition in merged:
+                        if(transition.get_transition() != None):
+                            merge_nfa.add_state(transition)
+
+                    #print(merge_nfa)
+                    print("DONE CONCAT")
+                    self.opStack.add(merge_nfa)
+
+        print(self.opStack)
 
 
 
