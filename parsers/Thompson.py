@@ -23,11 +23,24 @@ class Thompson:
         for i in range(0, len(tokens)):
             
             currentToken = tokens[i]
-            
-            if currentToken.get_type() == "SYMBOL" and currentToken.get_value() != "&":
+            if currentToken.get_type() == "SYMBOL" and currentToken.get_value() == "&":
+                #Regla #1: 
+                #0 -> {1: "&"}
+                trans1 = Transition(start=self.stateCounter, transition=currentToken.get_value(), end=self.stateCounter+1)
+                self.stateCounter += 1
+                #1 -> {} y es final.
+                trans2 = Transition(start=self.stateCounter, transition=None, end=None)
+                self.stateCounter += 1
                 
+                #estados, alfabeto, estado inicial, estado final, funcion de transicion
+                au = Automata([], [], trans1.get_start(), trans2.get_start(), [])
+                au.add_state(trans1)
+                au.add_state(trans2)
+                #print(au)
+                print("DONE &")
+                self.opStack.add(au)
 
-                
+            elif currentToken.get_type() == "SYMBOL" and currentToken.get_value() != "&":
                 #Regla #2: 
                 #0 -> {1: "B"}
                 trans1 = Transition(start=self.stateCounter, transition=currentToken.get_value(), end=self.stateCounter+1)
@@ -96,10 +109,11 @@ class Thompson:
                     nfa.add_state(finalMod)
                     #estado inicial de nfa preexistente a nuevo estado de trans
                     initialState = Transition(self.stateCounter, "&",  initial)
-                    initialEnd = Transition(initialState.get_start(), "&", final)
+                    
                     self.stateCounter += 1
                     
                     finalState = Transition(self.stateCounter, None, None)
+                    initialEnd = Transition(initialState.get_start(), "&", finalState.get_start())
                     #transicion de nfa final a final de nuevo nfa
                     finalTofinal = Transition(start=final, transition="&", end=finalState.get_start())
                     
@@ -196,6 +210,7 @@ class Thompson:
     def thompson_parser(self, tokens):
         print("Hi, im being passed this tokens! \n", tokens)
         nfa = self.evalPostfix(tokens)
+        print("FINAL",nfa)
         #export a imagen
         export_chart(nfa.pop())
         

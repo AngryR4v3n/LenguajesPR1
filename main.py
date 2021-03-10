@@ -4,7 +4,7 @@ from postfix import Postfixer
 #should return tokens
 
 postfixer = Postfixer()
-postRegEx = postfixer.to_postfix("(1|0)+.0")
+postRegEx = postfixer.to_postfix("b*")
 
 builder = Builder(postRegEx)
 

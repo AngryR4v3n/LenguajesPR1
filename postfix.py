@@ -36,17 +36,27 @@ class Postfixer:
             return True if a <= b else False
         except KeyError:
             return False
-
-    def to_postfix(self, expr):
+    
+    def fix_string(self, expr):
+        fixed = ""
         for ch in expr:
+            fixed += ch
             if self.is_operand(ch):
-                #no deberiamos tener mas de dos letras pegadas
                 self.checkOperands += 1
                 if self.checkOperands <= 2:
-                    self.output.append(ch)
-                else: 
-                    print("ERR: Incorrect syntax")
-                    exit(-1)
+                    pass
+                else:
+                    #si tenemos mas de dos letras pegadas, tenemos que meter un char de CONCAT
+                    fixed += "."
+                    self.checkOperands = 0
+        return fixed
+
+    def to_postfix(self, expr):
+        expr = self.fix_string(expr)
+        print("FIXED?",expr)
+        for ch in expr:
+            if self.is_operand(ch):
+                self.output.append(ch)
 
             elif ch == self.enums.LEFT_PARENS.value:
                 self.checkOperands = 0
@@ -73,7 +83,10 @@ class Postfixer:
                 self.stack.add(ch)
             #non supported char
             else:
+                
                 print("ERR: Incorrect syntax")
+
+                print("NON SUPPORTED CHAR")
                 exit(-1)
                         
         while not self.stack.is_empty():
