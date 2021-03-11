@@ -8,5 +8,5 @@ class BuilderEnum(Enum):
     OR = "|"
     LEFT_PARENS = "("
     RIGHT_PARENS = ")"
-    CONCAT = "."
+    CONCAT = "?"
     

@@ -92,7 +92,7 @@ class Thompson:
                             or_nfa.add_state(transition)
                     
                     #print(or_nfa)
-                    print("DONE OR")
+                    print("DONE OR, to: \n", nfa2, "\n", nfa1 )
                     self.opStack.add(or_nfa)
                 
                 #REGLA KLEENE
@@ -106,7 +106,7 @@ class Thompson:
                     finalMod = Transition(start=final, transition="&", end=initial)
 
                     
-                    nfa.add_state(finalMod)
+                    
                     #estado inicial de nfa preexistente a nuevo estado de trans
                     initialState = Transition(self.stateCounter, "&",  initial)
                     
@@ -123,14 +123,14 @@ class Thompson:
                     kleene_nfa = Automata([], [], initialState.get_start(), finalState.get_start(), [])
                     arr1 = nfa.arr_states()
                     unifiedArray = arr1
-                    newTrans = [initialState,initialEnd, finalState, finalTofinal]
+                    newTrans = [initialState,initialEnd, finalState, finalTofinal, finalMod]
                     finalTrans = unifiedArray + newTrans
                     
                     for transition in finalTrans:
                         if(transition.get_transition() != None):
                             kleene_nfa.add_state(transition)
 
-                    print("DONE KLEENE")
+                    print("DONE KLEENE to \n", nfa)
                     self.opStack.add(kleene_nfa)
 
                 if currentToken.get_type() == "+":
@@ -139,37 +139,52 @@ class Thompson:
                     #encontramos estados finales e iniciales:
                     final = nfa.get_final_state()        
                     initial = nfa.get_initial_state()
-                    #transicion de final a inicial del nfa preexistente
-                    finalMod = Transition(start=final, transition="&", end=initial)
+
+                    target_symbol = None
+                    for fn in nfa.arr_states():
+                        if initial == fn.get_start():
+                            target_symbol = fn.get_transition()
+                            break
+                    
+                    
+                    midState = Transition(self.stateCounter, transition="&", end=initial)
+                    self.stateCounter += 1
+
+                    cycle_state = Transition(self.stateCounter, transition=target_symbol, end=midState.get_start())
+                    self.stateCounter += 1
 
                     
-                    nfa.add_state(finalMod)
+                    #transicion de final a inicial del nfa preexistente
+                    finalMod = Transition(start=final, transition="&", end=initial)
+                    
                     #estado inicial de nfa preexistente a nuevo estado de trans
-                    initialState = Transition(self.stateCounter, "&",  initial)
-                    self.stateCounter += 1
                     
                     finalState = Transition(self.stateCounter, None, None)
+                    self.stateCounter += 1
+                    initialState = Transition(midState.get_start(), "&",  finalState.get_start())
+                    
+                    
                     #transicion de nfa final a final de nuevo nfa
                     finalTofinal = Transition(start=final, transition="&", end=finalState.get_start())
                     
-                    self.stateCounter += 1
+                   
                     
                     
-                    plus_nfa = Automata([], [], initialState.get_start(), finalState.get_start(), [])
+                    plus_nfa = Automata([], [], cycle_state.get_start(), finalState.get_start(), [])
                     arr1 = nfa.arr_states()
                     unifiedArray = arr1
-                    newTrans = [initialState, finalState, finalTofinal]
+                    newTrans = [initialState, finalState, finalTofinal, midState,cycle_state, finalMod]
                     finalTrans = unifiedArray + newTrans
                     
                     for transition in finalTrans:
                         if(transition.get_transition() != None):
                             plus_nfa.add_state(transition)
 
-                    print("DONE PLUS")
+                    print("DONE PLUS to: \n", nfa)
                     self.opStack.add(plus_nfa)
 
 
-                if currentToken.get_type() == ".":
+                if currentToken.get_type() == "?":
                     nfa2 = self.opStack.pop()
                     nfa1 = self.opStack.pop()
 
@@ -180,12 +195,10 @@ class Thompson:
                     for state in nfa2.arr_states():
                         #print("STATE", state)
                         if (state.get_start() == initial):
-                            print("converting", state, "to ", final)
                             state.set_initial(final)
 
                     for state in nfa1.arr_states():
                         if(state.get_start() == final):
-                            print("converting", state, "to ", final)
                             state.set_initial(initial)
                     merge_nfa = Automata([], [], nfa1.get_initial_state(), nfa2.get_final_state(), [])
 
@@ -199,18 +212,59 @@ class Thompson:
                             merge_nfa.add_state(transition)
 
                     #print(merge_nfa)
-                    print("DONE CONCAT")
+                    print("DONE CONCAT to \n", nfa1, "\n", nfa2 )
                     self.opStack.add(merge_nfa)
 
         #opstack is ready to be exported
         return self.opStack
 
+    def empty_stack(self, stack):
+        merge_nfa = None
+       
+        while stack.length()<1:
+            #lo tomamos como join 
+            nfa2 = stack.pop()
+            nfa1 = stack.pop()
+            initial = nfa2.get_initial_state()
+            final = nfa1.get_final_state()
+            #print("INIT", initial)
+            #print("FINAL", final)
+            for state in nfa2.arr_states():
+                #print("STATE", state)
+                if (state.get_start() == initial):
+                    
+                    state.set_initial(final)
+
+            for state in nfa1.arr_states():
+                if(state.get_start() == final):
+                    
+                    state.set_initial(initial)
+            merge_nfa = Automata([], [], nfa1.get_initial_state(), nfa2.get_final_state(), [])
+
+            opsNfa2 = nfa2.arr_states()
+            opsNfa1 = nfa1.arr_states()
+
+            merged = opsNfa2 + opsNfa1
+
+            for transition in merged:
+                if(transition.get_transition() != None):
+                    merge_nfa.add_state(transition)
+                
+        if not merge_nfa:
+            merge_nfa = self.opStack.pop()
+        
+        self.opStack.add(merge_nfa)
+        
+        
+        return stack
 
 
     def thompson_parser(self, tokens):
         print("Hi, im being passed this tokens! \n", tokens)
         nfa = self.evalPostfix(tokens)
+        nfa = self.empty_stack(nfa)
         print("FINAL",nfa)
+        print("LENGTH", nfa.length())
         #export a imagen
         export_chart(nfa.pop())
         

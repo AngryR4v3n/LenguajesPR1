@@ -27,7 +27,10 @@ class Postfixer:
     
     
     def is_operand(self, ch):
-        return ch.isalnum()
+        if(ch not in self.operators) and ch != "(" and ch != ")":
+            return True
+        else: 
+            return False
 
     def check_precedence(self, i):
         try:
@@ -39,31 +42,81 @@ class Postfixer:
     
     def fix_string(self, expr):
         fixed = ""
-        for ch in expr:
-            fixed += ch
-            if self.is_operand(ch):
-                self.checkOperands += 1
-                if self.checkOperands <= 2:
-                    pass
-                else:
-                    #si tenemos mas de dos letras pegadas, tenemos que meter un char de CONCAT
-                    fixed += "."
-                    self.checkOperands = 0
-        return fixed
+        posToInsert = []
+        isOk = True
+        for i in range(len(expr)-1):
+            #si hay parens y no es operador...ni parentesis
+            if(expr[i] == ")" and expr[i+1] not in self.operators and expr[i+1] != "(" and expr[i+1] != ")"):
+                posToInsert.append(i)
+            
+            elif(self.is_operand(expr[i]) and self.is_operand(expr[i+1])):
+                
+                posToInsert.append(i)
+            elif(expr[i] == "*" and expr[i+1] == "*"):
+                isOk = False
+            
+            elif(expr[i] == "(") and (i != 0) and self.is_operand(expr[i-1]) and self.is_operand(expr[i+1]):
+               
+                posToInsert.append(i-1)
+
+            elif((expr[i] == "*" or expr[i] == "+") and self.is_operand(expr[i+1]) and (expr[i+1] != "(" or expr[i+1] != ")")):
+                
+                posToInsert.append(i)
+
+            elif((expr[i] == "*" or expr[i] == "+") and (expr[i-1] == ")" and expr[i+1]) == "("):
+                posToInsert.append(i)
+
+            elif(expr[i] == "*" and expr[i+1] == "("):
+                posToInsert.append(i)
+
+            elif(expr[i] == ")" and expr[i+1] == "("):
+                posToInsert.append(i)
+
+            elif(expr[i] == "?" and (not self.is_operand(expr[i+1]))):
+                fixed += "&"
+
+            if(isOk):
+                fixed +=expr[i]
+    
+            isOk = True
+        
+        fixed +=expr[-1]
+        if self.is_operand(expr[-1]):
+            posToInsert.append(len(expr)-1)
+        elif expr[-1] == self.enums.CONCAT.value or expr[-1] == self.enums.OR.value:
+            fixed += "&"
+
+        
+        
+        
+        #sirve para llevar track del offser
+        adder = 0
+        for i in posToInsert:
+            adder += 1
+            fixed = list(fixed)
+            fixed.insert(i+adder, self.enums.CONCAT.value)
+            fixed = ''.join(fixed)
+        
+        if fixed[-1] == self.enums.CONCAT.value:
+            return fixed[:len(fixed)-1]
+        else:
+            return fixed
 
     def to_postfix(self, expr):
         expr = self.fix_string(expr)
-        print("FIXED?",expr)
+        
+        print("INTERPRETING AS: ", expr)
         for ch in expr:
             if self.is_operand(ch):
                 self.output.append(ch)
 
             elif ch == self.enums.LEFT_PARENS.value:
-                self.checkOperands = 0
+                
                 self.stack.add(ch)
 
             elif ch == ")":
-                self.checkOperands = 0
+                
+                
                 while ((not self.stack.is_empty()) and (self.stack.peek() != self.enums.LEFT_PARENS.value)):
                     a = self.stack.pop()
                     self.output.append(a)
@@ -75,7 +128,7 @@ class Postfixer:
                     self.stack.pop()
             
             elif ch in self.operators:
-                self.checkOperands = 0
+            
                 while(not self.stack.is_empty() and self.check_precedence(ch)):
                     
                     self.output.append(self.stack.pop())
@@ -86,7 +139,7 @@ class Postfixer:
                 
                 print("ERR: Incorrect syntax")
 
-                print("NON SUPPORTED CHAR")
+                print("NON SUPPORTED CHAR", ch)
                 exit(-1)
                         
         while not self.stack.is_empty():
