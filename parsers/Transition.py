@@ -3,6 +3,7 @@ class Transition:
         self.start = start
         self.transition = transition
         self.end = end
+        self.mark = False
 
     def get_start(self):
         return self.start
@@ -18,6 +19,12 @@ class Transition:
 
     def set_end(self, number):
         self.end = number
+    
+    def get_mark(self):
+        return self.mark
+    
+    def set_mark(self, data):
+        self.mark = data
 
     def __repr__(self):
         return f'<Transition from: {self.start} to {self.end} through {self.transition}>'

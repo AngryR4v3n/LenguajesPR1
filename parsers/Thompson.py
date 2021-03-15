@@ -17,7 +17,7 @@ class Thompson:
     def evalPostfix(self, tokens):
         """
         Definimos las reglas segun: 
-        https://medium.com/swlh/visualizing-thompsons-construction-algorithm-for-nfas-step-by-step-f92ef378581b
+        https://medium.com/swlh/visualizing-thompsons-construction-algorithm-for-nfas-step-by-step-f92ef378581b 
         """
         
         for i in range(0, len(tokens)):
@@ -37,7 +37,7 @@ class Thompson:
                 au.add_state(trans1)
                 au.add_state(trans2)
                 #print(au)
-                print("DONE &")
+                #print("DONE &")
                 self.opStack.add(au)
 
             elif currentToken.get_type() == "SYMBOL" and currentToken.get_value() != "&":
@@ -54,7 +54,7 @@ class Thompson:
                 au.add_state(trans1)
                 au.add_state(trans2)
                 #print(au)
-                print("DONE SYMB")
+                #print("DONE SYMB")
                 self.opStack.add(au)
                 
 
@@ -92,7 +92,7 @@ class Thompson:
                             or_nfa.add_state(transition)
                     
                     #print(or_nfa)
-                    print("DONE OR, to: \n", nfa2, "\n", nfa1 )
+                    #print("DONE OR, to: \n", nfa2, "\n", nfa1 )
                     self.opStack.add(or_nfa)
                 
                 #REGLA KLEENE
@@ -130,7 +130,7 @@ class Thompson:
                         if(transition.get_transition() != None):
                             kleene_nfa.add_state(transition)
 
-                    print("DONE KLEENE to \n", nfa)
+                    #print("DONE KLEENE to \n", nfa)
                     self.opStack.add(kleene_nfa)
 
                 if currentToken.get_type() == "+":
@@ -180,7 +180,7 @@ class Thompson:
                         if(transition.get_transition() != None):
                             plus_nfa.add_state(transition)
 
-                    print("DONE PLUS to: \n", nfa)
+                    #print("DONE PLUS to: \n", nfa)
                     self.opStack.add(plus_nfa)
 
 
@@ -212,7 +212,7 @@ class Thompson:
                             merge_nfa.add_state(transition)
 
                     #print(merge_nfa)
-                    print("DONE CONCAT to \n", nfa1, "\n", nfa2 )
+                    #print("DONE CONCAT to \n", nfa1, "\n", nfa2 )
                     self.opStack.add(merge_nfa)
 
         #opstack is ready to be exported
@@ -260,13 +260,15 @@ class Thompson:
 
 
     def thompson_parser(self, tokens):
-        print("Hi, im being passed this tokens! \n", tokens)
+        print("Hi, im being passed these tokens! \n", tokens)
         nfa = self.evalPostfix(tokens)
         nfa = self.empty_stack(nfa)
-        print("FINAL",nfa)
-        print("LENGTH", nfa.length())
+        #print("FINAL",nfa)
+        res = nfa.pop()
+        #print("RES", res)
         #export a imagen
-        export_chart(nfa.pop())
+        export_chart(res)
+        return res
         
     
         

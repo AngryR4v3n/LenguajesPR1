@@ -23,7 +23,13 @@ class Parser:
             exit(-1)
         else:
             parser = get_parser(format)
-            return parser(tokenArr)
+
+            if format == "Thompson":
+
+                automata = parser(tokenArr)
+                powerSet = PowerSet(automata)
+                powerSet.build_automata()
+                #return powerSet.build_automata()
 
     def isCorrect(self, tkk):
         #here we check if usage of parens is correct.
@@ -69,9 +75,7 @@ def get_parser(format):
     elif format == "Thompson":
         thompson = Thompson()
         return thompson.thompson_parser
-    elif format == "Powerset":
-        powerSet = PowerSet()
-        return powerSet.build_automata()
+        
     else:
         raise ValueError(format)    
 
