@@ -1,13 +1,22 @@
 from stack import Stack
 class BTree:
     def __init__(self):
+        #Structure
         self.left = None
         self.right = None
         self.root = None
+        
+        #logic
         self.number = None
+        self.nullable = None
+        self.first_pos = None
+        self.last_pos = None
+        self.forward_pos = None
+
     
     def set_number(self, number):
         self.number = number
+
     def __repr__(self):
         return f"<Tree Root: {self.root} right: {self.right} left:{self.left}"
 
@@ -25,7 +34,7 @@ def generate_tree(tokensArr):
             tree.left = None
             tree.right = None
             tree.number = counter
-            counter += 1
+            
             output.append(tree)
             
         elif token.get_type() == "(":
@@ -42,6 +51,7 @@ def generate_tree(tokensArr):
                 tree.root = op
                 tree.left = leftOp
                 tree.right = rightOp
+                
                 output.append(tree)
             stackOp.pop()
         
@@ -53,6 +63,7 @@ def generate_tree(tokensArr):
                 tree.root = token.get_type()
                 tree.left = uniOp
                 tree.right = None
+            
                 output.append(tree)
             #any other kind of operation of two operators ..
             else:
@@ -64,6 +75,7 @@ def generate_tree(tokensArr):
                     tree.root = op
                     tree.left = leftOp
                     tree.right = rightOp
+                    
                     output.append(tree)
                 #if its a symbol, get value, if not, get the type (where the char is stored)
                 if(token.get_type() != "SYMBOL"):
@@ -71,7 +83,7 @@ def generate_tree(tokensArr):
                 elif(token.get_type() == "SYMBOL"):
                     stackOp.add(token.get_value())
         
-        
+        counter += 1
     #while theres sth in the stack..
     while stackOp.length() > 0:
         rightOp = output.pop()
@@ -81,7 +93,9 @@ def generate_tree(tokensArr):
         tree.root = op
         tree.left = leftOp
         tree.right = rightOp
+        
         output.append(tree)
+        counter += 1
     
 
     return output[-1]
