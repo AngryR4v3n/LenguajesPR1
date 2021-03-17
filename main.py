@@ -4,9 +4,17 @@ from postfix import Postfixer
 #should return tokens
 
 postfixer = Postfixer()
-postRegEx = postfixer.to_postfix("(a|b)*abb")
 
-builder = Builder(postRegEx)
+
+
+toBuild = "AFD"
+if(toBuild == "AFD"):
+    inFixRegEx = postfixer.fix_string("(a|b)*abc")
+    builder = Builder(inFixRegEx)
+else:
+    postfixRegex = postfixer.to_postfix("(a|b)*abb")
+    builder = Builder(postfixRegex)
+
 
 
 #paso de generar tokens
@@ -15,4 +23,4 @@ builder.generator()
 tokens = builder.getTokenArr()
 parser = Parser()
 
-parser.parse(tokens, "Thompson")
+parser.parse(tokens, toBuild)

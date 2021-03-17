@@ -29,6 +29,9 @@ class Parser:
                 automata = parser(tokenArr)
                 powerSet = PowerSet(automata)
                 powerSet.build_automata()
+
+            if format == "AFD":
+                automata = parser(tokenArr)
                 #return powerSet.build_automata()
 
     def isCorrect(self, tkk):
@@ -75,6 +78,7 @@ def get_parser(format):
     elif format == "Thompson":
         thompson = Thompson()
         return thompson.thompson_parser
+
         
     else:
         raise ValueError(format)    
