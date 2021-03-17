@@ -46,7 +46,10 @@ class AFD:
     def compute_positions(self, stackTree, treeObjs):
         counter = 0
         while counter < len(stackTree):
-            print(stackTree[counter].compute_first(treeObjs[counter]))
+            #FIRST POS
+            stackTree[counter].compute_first(treeObjs[counter])
+            
+            print("last pos!",stackTree[counter].compute_last(treeObjs[counter]))
             counter += 1
         #for tree in array:
 

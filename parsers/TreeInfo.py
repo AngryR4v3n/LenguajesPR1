@@ -40,6 +40,38 @@ class TreeInfo:
             self.first_pos = [tree.number]
             return [tree.number]
 
+    def compute_last(self, tree):
+        if(tree.root == "|"):
+            arr1 = tree.left.last_pos 
+            arr2 = tree.right.last_pos
+            unified = self.union(arr1, arr2)
+            tree.last_pos = unified
+            return unified
+
+        elif(tree.root == "?" and (self.is_nullable(tree.right))):
+            arr1 = tree.left.last_pos 
+            arr2 = tree.right.last_pos
+            unified = self.union(arr1, arr2)
+            tree.last_pos = unified
+            return unified
+        elif(tree.root == "?" and not (self.is_nullable(tree.right))):
+            arr1 = tree.right.last_pos 
+            tree.last_pos = arr1
+            return arr1
+
+        elif(tree.root == "*"):
+            arr1 = tree.left.last_pos 
+            tree.last_pos = arr1
+            return arr1
+        
+        elif(self.tree.root == "&"):
+            return []
+
+        else:
+            #si es un simbolo..
+            tree.last_pos = [tree.number]
+            self.last_pos = [tree.number]
+            return [tree.number]
 
     def union(self, arr1, arr2):
         for elem in arr1:
@@ -73,8 +105,6 @@ class TreeInfo:
     def __repr__(self):
         return f"<TreeInfo number is: {self.tree.number} first_pos: {self.first_pos} last_pos: {self.last_pos}>"
 
-
-    #def compute_last(self):
 
     #def compute(self):
 
