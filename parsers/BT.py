@@ -4,7 +4,10 @@ class BTree:
         self.left = None
         self.right = None
         self.root = None
-
+        self.number = None
+    
+    def set_number(self, number):
+        self.number = number
     def __repr__(self):
         return f"<Tree Root: {self.root} right: {self.right} left:{self.left}"
 
@@ -13,11 +16,16 @@ def generate_tree(tokensArr):
     
     output = []
     stackOp = Stack()
+    counter = 0
     for token in tokensArr:
         
         if token.get_type() == "SYMBOL":
             tree = BTree()
             tree.root = token.get_value()
+            tree.left = None
+            tree.right = None
+            tree.number = counter
+            counter += 1
             output.append(tree)
             
         elif token.get_type() == "(":
@@ -32,8 +40,8 @@ def generate_tree(tokensArr):
                 op = stackOp.pop()
                 tree = BTree()
                 tree.root = op
-                tree.left = leftOp.root
-                tree.right = rightOp.root
+                tree.left = leftOp
+                tree.right = rightOp
                 output.append(tree)
             stackOp.pop()
         
@@ -74,7 +82,6 @@ def generate_tree(tokensArr):
         tree.left = leftOp
         tree.right = rightOp
         output.append(tree)
-        if (len(output) == 1):
-            return output[-1]
+    
 
     return output[-1]
