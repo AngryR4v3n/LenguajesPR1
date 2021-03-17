@@ -18,4 +18,14 @@ def export_chart(nfa):
     for transition in nfa.arr_states():
         f.edge(str(transition.get_start()), str(transition.get_end()), label=str(transition.get_transition()))
     
-    #f.view()
+    f.view()
+
+def export_chart_subset(dfa):
+    f = Digraph('finite_state_machine', filename='dfa_subset.gv')
+    f.attr(rankdir='LR', size='8,5')
+    f.attr('node', shape='circle')
+    for transition in dfa.arr_states():
+        f.edge(str(transition.get_start()), str(transition.get_end()), label=str(transition.get_transition()))
+
+    f.view()
+    

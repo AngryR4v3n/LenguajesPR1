@@ -6,7 +6,7 @@ sys.path.append(os.path.abspath(os.path.join("parsers")))
 from Transition import *
 from Automata import Automata
 import copy
-
+from helper import * 
 class PowerSet:
     def __init__(self, automata):
         
@@ -76,11 +76,11 @@ class PowerSet:
             check = []
             dfa_states = []
             toState = Transition(start=S, transition=None, end=S)
+            toState.set_initial(True)
             dfa_states.append(toState)
             check.append(toState)
 
         elif len(checkArr) > 0:
-            counter += 1
             S = []
             check = checkArr
             dfa_states = copy.copy(checkArr)
@@ -109,13 +109,17 @@ class PowerSet:
                     res = self.get_traversal(toState.get_end(), letter)
                     if len(res) > 0:
                         closure = self.e_closure(res, res=[])
+                        closure.sort()
                         is_in_dfa = self.search_dfa_state(closure, check)
         
                     
                         if not is_in_dfa:
                             #Creamos y pusheamos el estado al array y al dfa
                             toPush_arr = Transition(start=toState.get_end(), transition=letter, end=closure)
-                            
+                            toPush_arr.set_index(counter)
+                            counter += 1 
+                            if self.final in toPush_arr.get_start():
+                                toPush_arr.set_final(True)
                             
                             self.newfn.append(toPush_arr)
                             check.append(toPush_arr)
@@ -123,8 +127,12 @@ class PowerSet:
                             
                     
                         else:
-                            pass
                             createState = Transition(start=toState.get_end(), transition=letter, end=closure)
+                            createState.set_index(counter)
+                            counter += 1 
+                            if self.final in createState.get_start():
+                                createState.set_final(True)
+                            
                             self.newfn.append(createState)
             
         
@@ -135,7 +143,23 @@ class PowerSet:
         else:
             #print("FINAL",check)
             print("FINAL STATES", self.newfn)
-            return "sabiaz q jelo kiti significa ola demonio?"
+            au = Automata([],[], None, None, self.newfn)
+
+            #change to letters
+            """
+            dfa_alphabet_nodes =["A","B","C","D","E","F","G","H","I","J"]
+            for transition in self.newfn:
+                start1 = transition.index
+                h = dfa_alphabet_nodes[start1]
+                transition.set_start(h)
+                start2 = transition.index
+                n = dfa_alphabet_nodes[start2]
+                transition.set_end(n)
+            """
+            
+            #au.update_everything(self.newfn)
+            export_chart_subset(au)
+            return au
         #print("returning ", answer)
         
             

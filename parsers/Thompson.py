@@ -267,7 +267,7 @@ class Thompson:
         res = nfa.pop()
         #print("RES", res)
         #export a imagen
-        export_chart(res)
+        #export_chart(res)
         return res
         
     
