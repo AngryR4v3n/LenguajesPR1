@@ -46,6 +46,7 @@ def generate_tree(tokensArr):
                 tree.left = uniOp
                 tree.right = None
                 output.append(tree)
+            #any other kind of operation of two operators ..
             else:
                 while stackOp.length() > 0 and stackOp.peek() != '(':
                     op = stackOp.pop()
@@ -56,14 +57,15 @@ def generate_tree(tokensArr):
                     tree.left = leftOp
                     tree.right = rightOp
                     output.append(tree)
+                #if its a symbol, get value, if not, get the type (where the char is stored)
                 if(token.get_type() != "SYMBOL"):
                     stackOp.add(token.get_type())
                 elif(token.get_type() == "SYMBOL"):
                     stackOp.add(token.get_value())
         
         
-    
-    while stackOp:
+    #while theres sth in the stack..
+    while stackOp.length() > 0:
         rightOp = output.pop()
         leftOp = output.pop()
         op = stackOp.pop()
