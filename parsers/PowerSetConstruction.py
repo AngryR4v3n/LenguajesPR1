@@ -191,6 +191,7 @@ class PowerSet:
                 if existing.get_start() == relation:
                     answer.append(existing)
         return answer
+        
     def get_traversal(self, arr, letter):
         answer = []
         subset = self.traverse(arr, letter)

@@ -1,4 +1,5 @@
 from stack import Stack
+from BuilderEnum import BuilderEnum
 class BTree:
     def __init__(self):
         #Structure
@@ -12,8 +13,7 @@ class BTree:
         self.first_pos = None
         self.last_pos = None
         self.forward_pos = None
-
-    
+        
     def set_number(self, number):
         self.number = number
 
@@ -26,6 +26,7 @@ def generate_tree(tokensArr):
     output = []
     stackOp = Stack()
     counter = 0
+
     for token in tokensArr:
         
         if token.get_type() == "SYMBOL":
@@ -54,7 +55,6 @@ def generate_tree(tokensArr):
                 
                 output.append(tree)
             stackOp.pop()
-        
         else:
             #needs only one operator, special case
             if token.get_type() == "*":

@@ -78,27 +78,47 @@ class TreeInfo:
         if tree.root == "?":
             left = self.compute_last(tree.left)
             right = self.compute_first(tree.right)
+            """
             for i in left:
                 for num in right:
                     if num not in table[i]:
                         table[i].append(num)
+            """
+            for i in left:
+                for trans in table:
+                    if(trans.get_start() == i):
+                        for num in right:
+                            if num not in trans.get_end():
+                                trans.get_end().append(num)
+                    
 
+                        break
         elif tree.root == "*":
             left = self.compute_last(tree)
             right = self.compute_first(tree)
+            """
             for i in left:
                 for num in right:
                     if num not in table[i]:
                         table[i].append(num)
-
+            """
+            for i in left:
+                for trans in table:
+                    if(trans.get_start() == i):
+                        for num in right:
+                            if num not in trans.get_end():
+                                trans.get_end().append(num)
+                        break
         elif tree.root == "+":
             left = self.compute_last(tree.left)
             right = self.compute_first(tree.left)
             for i in left:
-                for num in right:
-                    if num not in table[i]:
-                        table[i].append(num)
-
+                for trans in table:
+                    if(trans.get_start() == i):
+                        for num in right:
+                            if num not in trans.get_end():
+                                trans.get_end().append(num)
+                        break
         if tree.left != None:
             self.compute_followpos(tree.left, table)
         if tree.right != None:
