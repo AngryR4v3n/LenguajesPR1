@@ -9,7 +9,7 @@ Example extracted from: https://graphviz.readthedocs.io/en/stable/examples.html#
 def export_chart(nfa):
     f = Digraph('finite_state_machine', filename='nfa.gv')
     f.attr(rankdir='LR', size='8,5')
-    f.attr('node', shape='reactangular')
+    f.attr('node', shape='rectangular')
     f.node(str(nfa.get_initial_state()))
     f.attr('node', shape='doublecircle')
     f.node(str(nfa.get_final_state()))
@@ -26,7 +26,7 @@ def export_chart_subset(dfa):
     f.attr('node', shape='circle')
     for transition in dfa.arr_states():
         if transition.isInitial:
-            f.attr('node', shape='reactangular')
+            f.attr('node', shape='rectangular')
         elif transition.isFinal:
             f.attr('node', shape='doublecircle')
 

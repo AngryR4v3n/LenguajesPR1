@@ -28,11 +28,11 @@ class Parser:
 
                 automata = parser(tokenArr)
                 
-                automata.build_automata()
+                #automata.build_automata()
 
             if format == "PowerSet":
                 thompson = Thompson()
-                au = thompson.thompson_parser(tokenArr)
+                au = thompson.thompson_export(tokenArr)
                 automata = parser(au)
 
 

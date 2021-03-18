@@ -195,11 +195,11 @@ class Thompson:
                     for state in nfa2.arr_states():
                         #print("STATE", state)
                         if (state.get_start() == initial):
-                            state.set_initial(final)
+                            state.set_start(final)
 
                     for state in nfa1.arr_states():
                         if(state.get_start() == final):
-                            state.set_initial(initial)
+                            state.set_start(initial)
                     merge_nfa = Automata([], [], nfa1.get_initial_state(), nfa2.get_final_state(), [])
 
                     opsNfa2 = nfa2.arr_states()
@@ -233,12 +233,12 @@ class Thompson:
                 #print("STATE", state)
                 if (state.get_start() == initial):
                     
-                    state.set_initial(final)
+                    state.set_start(final)
 
             for state in nfa1.arr_states():
                 if(state.get_start() == final):
                     
-                    state.set_initial(initial)
+                    state.set_start(initial)
             merge_nfa = Automata([], [], nfa1.get_initial_state(), nfa2.get_final_state(), [])
 
             opsNfa2 = nfa2.arr_states()
@@ -267,10 +267,14 @@ class Thompson:
         res = nfa.pop()
         #print("RES", res)
         #export a imagen
-        #export_chart(res)
+        export_chart(res)
         return res
-        
     
+    def thompson_export(self, tokens):
+        nfa = self.evalPostfix(tokens)
+        nfa = self.empty_stack(nfa)
+        res = nfa.pop()
+        return res
         
         
 

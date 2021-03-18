@@ -7,8 +7,8 @@ postfixer = Postfixer()
 
 
 
-toBuild = "PowerSet"
-automata = "(a|b)*"
+toBuild = "Thompson"
+automata = "(a|b)*abb"
 if(toBuild == "AFD"):
     inFixRegEx = automata
     inFixRegEx += "?#"
