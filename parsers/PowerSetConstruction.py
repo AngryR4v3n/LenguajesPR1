@@ -18,6 +18,8 @@ class PowerSet:
         self.newfn = []
         self.counter = 0
 
+        self.finalDFA = []
+
     def prepare(self, automata):
         self.states = automata.get_states()
         self.language = automata.get_language()
@@ -29,8 +31,9 @@ class PowerSet:
     def subset_parser(self, auto):
         self.prepare(auto)
         self.build_automata(automata=auto)
-        self.newfn[0].set_initial(True)
-        au = Automata([],[], None, None, self.newfn)
+        initial = self.newfn[0]
+        initial.set_initial(True)
+        au = Automata([],[], initial, self.finalDFA, self.newfn)
         print("FINAL AFD", au)
         #au.update_everything()
         export_chart_subset(au)
@@ -138,6 +141,7 @@ class PowerSet:
                             counter += 1 
                             if self.final in toPush_arr.get_start():
                                 toPush_arr.set_final(True)
+                                self.finalDFA.append(toPush_arr)
                             
                             self.newfn.append(toPush_arr)
                             check.append(toPush_arr)

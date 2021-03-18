@@ -27,19 +27,15 @@ def export_chart_subset(dfa):
     states_fn = dfa.arr_states()
     counter = 0
     f.attr('node', shape='rectangular')
-    for transition in states_fn:
-        if transition.isInitial:
-            f.node(str(transition.get_start()))
-            #states_fn.remove(counter)
-            break 
-        counter += 1
-    counter = 0
+    f.node(str(dfa.start.get_start()))
+    
+    
     f.attr('node', shape='doublecircle')
     for transition in states_fn:
         if transition.isFinal:
             f.node(str(transition.get_start()))
             #states_fn.remove(counter)
-        counter += 1 
+    
 
     f.attr('node', shape='circle')
     for transition in states_fn:
