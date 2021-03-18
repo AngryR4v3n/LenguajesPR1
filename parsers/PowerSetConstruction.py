@@ -29,6 +29,7 @@ class PowerSet:
     def subset_parser(self, auto):
         self.prepare(auto)
         self.build_automata(automata=auto)
+        self.newfn[0].set_initial(True)
         au = Automata([],[], None, None, self.newfn)
         print("FINAL AFD", au)
         #au.update_everything()
