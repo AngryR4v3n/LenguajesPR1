@@ -73,6 +73,38 @@ class TreeInfo:
             self.last_pos = [tree.number]
             return [tree.number]
 
+
+    def compute_followpos(self, tree, table):
+        if tree.root == "?":
+            left = self.compute_last(tree.left)
+            right = self.compute_first(tree.right)
+            for i in left:
+                for num in right:
+                    if num not in table[i]:
+                        table[i].append(num)
+
+        elif tree.root == "*":
+            left = self.compute_last(tree)
+            right = self.compute_first(tree)
+            for i in left:
+                for num in right:
+                    if num not in table[i]:
+                        table[i].append(num)
+
+        elif tree.root == "+":
+            left = self.compute_last(tree.left)
+            right = self.compute_first(tree.left)
+            for i in left:
+                for num in right:
+                    if num not in table[i]:
+                        table[i].append(num)
+
+        if tree.left != None:
+            self.compute_followpos(tree.left, table)
+        if tree.right != None:
+            self.compute_followpos(tree.right, table)
+
+
     def union(self, arr1, arr2):
         for elem in arr1:
             if elem not in arr2:

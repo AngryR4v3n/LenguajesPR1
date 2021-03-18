@@ -8,6 +8,8 @@ class AFD:
     def tree_to_stack(self, tree, res=[]):
         if len(res) == 0:
             stack = [];
+            if tree:
+                stack.append(tree)
         else:
             stack = res
         if tree != None:
@@ -45,13 +47,24 @@ class AFD:
 
     def compute_positions(self, stackTree, treeObjs):
         counter = 0
+        #preparamos tabla
+        table = {}
+        for tree in stackTree:
+            if tree.tree.number:
+                table[tree.tree.number] = []
         while counter < len(stackTree):
             #FIRST POS
             stackTree[counter].compute_first(treeObjs[counter])
             
-            print("last pos!",stackTree[counter].compute_last(treeObjs[counter]))
+            stackTree[counter].compute_last(treeObjs[counter])
+
+            stackTree[counter].compute_followpos(treeObjs[counter], table)
             counter += 1
-        #for tree in array:
+        print("table", table)
+        return table
+
+    #def createDFA(self, table):
+
 
 
         

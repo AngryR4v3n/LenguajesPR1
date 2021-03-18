@@ -9,7 +9,7 @@ postfixer = Postfixer()
 
 toBuild = "AFD"
 if(toBuild == "AFD"):
-    inFixRegEx = postfixer.fix_string("(a|b)*abc")
+    inFixRegEx = postfixer.fix_string("(a|b)*abb")
     inFixRegEx += "?#"
     builder = Builder(inFixRegEx)
 else:
