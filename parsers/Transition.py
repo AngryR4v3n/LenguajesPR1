@@ -5,6 +5,8 @@ class Transition:
         self.end = end
         self.mark = False
         self.index = None
+        self.isFinal = False
+        self.isInitial = False
 
     def get_start(self):
         return self.start
@@ -21,11 +23,11 @@ class Transition:
     def set_end(self, data):
         self.end = data
 
-    def set_initial(self, number):
-        self.start = number
+    def set_initial(self, boolean):
+        self.isInitial = boolean
 
-    def set_end(self, number):
-        self.end = number
+    def set_final(self, boolean):
+        self.isFinal = boolean
     
     def get_mark(self):
         return self.mark

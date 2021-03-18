@@ -27,8 +27,15 @@ class Parser:
             if format == "Thompson":
 
                 automata = parser(tokenArr)
-                powerSet = PowerSet(automata)
-                powerSet.build_automata()
+                
+                automata.build_automata()
+
+            if format == "PowerSet":
+                thompson = Thompson()
+                au = thompson.thompson_parser(tokenArr)
+                automata = parser(au)
+
+
 
             if format == "AFD":
                 automata = parser(tokenArr)
@@ -78,6 +85,10 @@ def get_parser(format):
     elif format == "Thompson":
         thompson = Thompson()
         return thompson.thompson_parser
+
+    elif format == "PowerSet":
+        Power = PowerSet()
+        return Power.subset_parser
 
         
     else:

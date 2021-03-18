@@ -7,14 +7,15 @@ postfixer = Postfixer()
 
 
 
-toBuild = "AFD"
+toBuild = "PowerSet"
+automata = "(a|b)*"
 if(toBuild == "AFD"):
-    inFixRegEx = "(a*|b*)abb"
+    inFixRegEx = automata
     inFixRegEx += "?#"
     inFixRegEx = postfixer.fix_string(inFixRegEx)
     builder = Builder(inFixRegEx)
 else:
-    postfixRegex = postfixer.to_postfix("(a|b)*abb")
+    postfixRegex = postfixer.to_postfix(automata)
     builder = Builder(postfixRegex)
 
 

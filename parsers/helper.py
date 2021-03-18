@@ -25,6 +25,13 @@ def export_chart_subset(dfa):
     f.attr(rankdir='LR', size='8,5')
     f.attr('node', shape='circle')
     for transition in dfa.arr_states():
+        if transition.isInitial:
+            f.attr('node', shape='reactangular')
+        elif transition.isFinal:
+            f.attr('node', shape='doublecircle')
+
+        else:
+            f.attr('node', shape='circle')             
         f.edge(str(transition.get_start()), str(transition.get_end()), label=str(transition.get_transition()))
 
     f.view()

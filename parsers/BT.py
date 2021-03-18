@@ -28,7 +28,7 @@ def generate_tree(tokensArr):
     counter = 0
 
     for token in tokensArr:
-        
+        #if its a symbol, we just add a tree with empty child
         if token.get_type() == "SYMBOL":
             tree = BTree()
             tree.root = token.get_value()
@@ -39,12 +39,13 @@ def generate_tree(tokensArr):
             output.append(tree)
             
         elif token.get_type() == "(":
-            
+            #we add it to the stack op which will have track of all operations to be done
             stackOp.add(token.get_type())
         
         elif token.get_type() == ")":
 
             while stackOp.length() > 0 and stackOp.peek() != "(":
+                #empty until finding the "(", meanwhile we create the necessary trees
                 rightOp = output.pop()
                 leftOp = output.pop()
                 op = stackOp.pop()
@@ -84,6 +85,7 @@ def generate_tree(tokensArr):
                     stackOp.add(token.get_value())
         
         counter += 1
+        
     #while theres sth in the stack..
     while stackOp.length() > 0:
         rightOp = output.pop()

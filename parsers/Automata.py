@@ -48,8 +48,8 @@ class Automata:
         if trans.get_transition() not in self.language and trans.get_transition() != None:
             self.language.append(trans.get_transition())
 
-    def update_everything(self, transiciones):
-        for trans in transiciones:
+    def update_everything(self):
+        for trans in self.fn:
             self.add_state(trans)
 
     

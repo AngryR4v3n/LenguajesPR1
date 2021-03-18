@@ -5,9 +5,13 @@ from BT import *
 from TreeInfo import TreeInfo
 from Transition import Transition
 from Automata import Automata
+import copy
 class AFD:
     def __init__(self):
-        self.fn = {}
+        self.fn = []
+        self.initial = None
+        self.final = None
+        self.translator = None
     def tree_to_stack(self, tree, res=[]):
         
         if tree:
@@ -31,10 +35,13 @@ class AFD:
         treeInfo = self.generate_tree_info(st)
         table = self.compute_positions(treeInfo, st)
         #we turn it around to have depth first..
+        self.final = st[0].first_pos
         st.reverse()
-        initial = st[0]
-        #self.createDFA(table, initial, final, tokens)
-        print("done", table)
+        self.initial = st[0].first_pos
+        self.createDFA(tokens)
+        #print("STATES", self.fn)
+
+        #print("done", table)
 
         
     def generate_tree_info(self, stackTree):
@@ -53,14 +60,21 @@ class AFD:
             if tree.tree.number:
                 table.append(Transition(start=tree.tree.number, transition=None, end=[]))
         #primero todos los finales
-        
+        translator = {}
         while counter < len(stackTree):
-            #FIRST POS
+           
             if stackTree[counter].tree.number:
+                #FIRST POS
                 stackTree[counter].compute_first(treeObjs[counter])
                 #LAST POS
                 stackTree[counter].compute_last(treeObjs[counter])
-            
+                
+                #translate
+                if stackTree[counter].tree.root not in translator.keys():
+                    translator[stackTree[counter].tree.root] = stackTree[counter].first_pos
+                else:
+                    translator[stackTree[counter].tree.root].extend(stackTree[counter].first_pos) 
+                
             
             counter += 1
         
@@ -78,64 +92,44 @@ class AFD:
             counter += 1
 
         print("table", table)
+        self.translator = translator
+        #table = self.translate_table(table, stackTree)
         self.fn = table
+
+        
         return table
 
-    def createDFA(self, table, initial, tokens):
+
+    def createDFA(self, tokens):
         language = []
         for token in tokens:
             if token.get_type() == "SYMBOL" and (token.get_value() != "#" or token.get_value() != "&"):
                 if token.get_value() not in language:
                     language.append(token.get_value())
-        au = Automata([],language,initial,None,[])
-        state = Transition(start=initial,transition=None,end=None)
-        state.set_initial(True)
-        state.set_final(True)
         
+        self.build_automata(language)
     
-    def traverse(self, state, letter):
-        toReturn = []
-        for i in state:
-            for st in self.fn:
-                if i == st.get_start() and st.get_transition() == letter:
-                    toReturn.append(st.get_end())
-                    break
-        return toReturn
+   
 
-    def get_traversal(self, arr, letter):
-        answer = []
-        subset = self.traverse(arr, letter)
-        for final in subset:
-            answer.append(final)
-            #print("to", answer)   
 
-        
-        return answer
-
-    def build_automata(self, initial, language, counter=0, checkArr=None):
+    def build_automata(self, language, counter=0, checkArr=None):
         if checkArr == None:
-            q0 = initial
+            q0 = self.initial
             check = []
             dfa_states = []
             toState = Transition(start=q0, transition=None, end=q0)
             toState.set_initial(True)
             dfa_states.append(toState)
-            check.append(toState)
+            #check.append(toState)
 
         elif len(checkArr) > 0:
             S = []
             check = checkArr
             dfa_states = copy.copy(checkArr)
             
-
-            #S = self.e_closure(, res=[])
         else:
             print("AFD", check)
             return "finished"
-        #marcamos
-        #self.mark_states(S)
-        
-        answer = []
         print("States", dfa_states)
     
         for toState in dfa_states:
@@ -147,8 +141,9 @@ class AFD:
             
             #obtenemos move de toState
             for letter in language:
-                if letter != "&":
-                    res = self.get_traversal(toState.get_end(), letter)
+                if letter != "&" and letter != "#":
+                    #get traversal pasa a ser la union de los follow pos de cada uno de los elem
+                    res = self.traverse(toState.get_end())
                     if len(res) > 0:
                         is_in_dfa = self.search_dfa_state(res, check)
         
@@ -158,31 +153,74 @@ class AFD:
                             toPush_arr = Transition(start=toState.get_end(), transition=letter, end=res)
                             toPush_arr.set_index(counter)
                             counter += 1 
-                            if self.final in toPush_arr.get_start():
+                            if self.final[0] in toPush_arr.get_end():
                                 toPush_arr.set_final(True)
                             
-                            self.newfn.append(toPush_arr)
+                            self.fn.append(toPush_arr)
                             check.append(toPush_arr)
 
                             
                     
                         else:
-                            createState = Transition(start=toState.get_end(), transition=letter, end=closure)
+                            createState = Transition(start=toState.get_end(), transition=letter, end=res)
                             createState.set_index(counter)
                             counter += 1 
-                            if self.final in createState.get_start():
+                            if self.final[0] in createState.get_start():
                                 createState.set_final(True)
                             
-                            self.newfn.append(createState)
-            
+                            self.fn.append(createState)
+                else:
+                    continue
         
         is_over = self.is_over(check)
         
         if not is_over:
-            self.build_automata(checkArr=check, counter=counter)
+            self.build_automata(checkArr=check, language=language ,counter=counter)
         else:
+            print("TRANS",self.fn)
             print("Oopsie")
 
+
+
+
+    def traverse(self, state):
+        toReturn = []
+        for i in state:
+            for st in self.fn:
+                if i == st.get_start():
+                    if i not in toReturn:
+                        toReturn.extend(self.union(st.get_end(), toReturn))
+                        if i not in toReturn:
+                            toReturn.append(i)
+                    break
+        return toReturn
+    
+    def union(self, arr1, arr2):
+
+        res = []
+        for elem in arr1:
+            if elem not in arr2:
+                res.append(elem)
+        return res
+
+
+    def search_dfa_state(self, state, stateRepo):
+        for existing in stateRepo:
+            if state == existing.get_end():
+                return True
+                break
+        return False
+            
+    def is_over(self, dfa):
+        counter = 0
+        for state in dfa:
+            if state.get_mark():
+                counter += 1
+        
+        if counter == len(dfa):
+            return True
+        else:
+            return False
 
 
 

@@ -8,16 +8,33 @@ from Automata import Automata
 import copy
 from helper import * 
 class PowerSet:
-    def __init__(self, automata):
+    def __init__(self):
         
+        self.states = None
+        self.language = None
+        self.q0 = None
+        self.final = None
+        self.fn = None
+        self.newfn = []
+        self.counter = 0
+
+    def prepare(self, automata):
         self.states = automata.get_states()
         self.language = automata.get_language()
         self.q0 = automata.get_initial_state()
         self.final = automata.get_final_state()
         self.fn = automata.arr_states()
-        self.newfn = []
-        self.counter = 0
-        
+
+
+    def subset_parser(self, auto):
+        self.prepare(auto)
+        self.build_automata(automata=auto)
+        au = Automata([],[], None, None, self.newfn)
+        print("FINAL AFD", au)
+        #au.update_everything()
+        export_chart_subset(au)
+        return au
+
     def e_closure(self, states, res=[]):
         e_set = res
         for state in states:
@@ -68,7 +85,7 @@ class PowerSet:
                     break
         return toReturn
     
-    def build_automata(self, checkArr=None, counter=0):
+    def build_automata(self, checkArr=None, automata=None, counter=0):
         #revisamos las transiciones epsilon del start
         if checkArr == None:
             q0 = self.q0
@@ -140,26 +157,13 @@ class PowerSet:
         
         if not is_over:
             self.build_automata(checkArr=check, counter=counter)
+        
         else:
-            #print("FINAL",check)
-            print("FINAL STATES", self.newfn)
-            au = Automata([],[], None, None, self.newfn)
-
-            #change to letters
-            """
-            dfa_alphabet_nodes =["A","B","C","D","E","F","G","H","I","J"]
-            for transition in self.newfn:
-                start1 = transition.index
-                h = dfa_alphabet_nodes[start1]
-                transition.set_start(h)
-                start2 = transition.index
-                n = dfa_alphabet_nodes[start2]
-                transition.set_end(n)
-            """
             
-            #au.update_everything(self.newfn)
-            export_chart_subset(au)
-            return au
+            
+            print("returning")
+        
+            return 
         #print("returning ", answer)
         
             
