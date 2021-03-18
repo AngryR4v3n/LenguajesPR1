@@ -156,10 +156,4 @@ class TreeInfo:
 
     def __repr__(self):
         return f"<TreeInfo number is: {self.tree.number} first_pos: {self.first_pos} last_pos: {self.last_pos}>"
-
-
-    #def compute(self):
-
-
-    
     

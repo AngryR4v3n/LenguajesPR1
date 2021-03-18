@@ -26,11 +26,25 @@ class PowerSet:
         self.q0 = automata.get_initial_state()
         self.final = automata.get_final_state()
         self.fn = automata.arr_states()
-
-
+    
+    def translate(self):
+        vocab = vocabulary()
+        diction = {}
+        #iteramos para armar diccionario
+        for trans in self.newfn:
+            if str(trans.get_start()) not in diction.keys():
+                diction[str(trans.get_start())] = vocab[trans.index]
+        #iteramos otra vez para traducir
+        for trans in self.newfn:
+            trans.set_start(diction[str(trans.get_start())])
+            trans.set_end(diction[str(trans.get_end())])
+        
     def subset_parser(self, auto):
         self.prepare(auto)
         self.build_automata(automata=auto)
+        # aqui deberiamos convertir todo..
+
+        self.translate()
         initial = self.newfn[0]
         initial.set_initial(True)
         au = Automata([],[], initial, self.finalDFA, self.newfn)
@@ -105,21 +119,16 @@ class PowerSet:
             S = []
             check = checkArr
             dfa_states = copy.copy(checkArr)
-            
 
-            #S = self.e_closure(, res=[])
         else:
             print("SUBSET AFD", self.newfn)
             return "finished"
         #marcamos
         #self.mark_states(S)
-        
-        answer = []
         print("States", dfa_states)
     
         for toState in dfa_states:
             if toState.get_mark():
-                #toState = dfa_states.pop()
                 continue
             toState.set_mark(True)
             #marcamos
