@@ -45,7 +45,7 @@ class PowerSet:
         # aqui deberiamos convertir todo..
 
         self.translate()
-        initial = self.newfn[0]
+        initial = self.fn[0]
         initial.set_initial(True)
         au = Automata([],[], initial, self.finalDFA, self.newfn)
         print("FINAL AFD", au)
@@ -66,14 +66,6 @@ class PowerSet:
                     self.e_closure([transition.get_end()],res=e_set)
         
         return e_set
-
-    def move(self, state, transition):
-        reachable_set = []
-        for op in self.fn:
-            if op.get_start() == state and op.get_transition() == transition:
-                reachable_set.append(transition)
-
-        return reachable_set
 
     
     def search_by_start(self, arrState):

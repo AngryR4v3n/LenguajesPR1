@@ -58,7 +58,7 @@ def generate_tree(tokensArr):
             stackOp.pop()
         else:
             #needs only one operator, special case
-            if token.get_type() == "*":
+            if token.get_type() == "*" or token.get_type() == "+":
                 uniOp = output.pop()
                 tree = BTree()
                 tree.root = token.get_type()
@@ -81,6 +81,7 @@ def generate_tree(tokensArr):
                 #if its a symbol, get value, if not, get the type (where the char is stored)
                 if(token.get_type() != "SYMBOL"):
                     stackOp.add(token.get_type())
+
                 elif(token.get_type() == "SYMBOL"):
                     stackOp.add(token.get_value())
         

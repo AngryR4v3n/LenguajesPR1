@@ -55,7 +55,7 @@ class Automata:
     
         
     def __repr__(self):
-        return f"<Automata fn: {self.fn} with language: {self.language} states: {self.states}>\n STARTING: {self.start}, END: {self.end}"
+        return f"\n<Automata fn: {self.fn} with language: {self.language} states: {self.states}>\n STARTING NODE: {self.start.get_start()}, END STATES: {self.end}"
         
         
 

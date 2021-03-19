@@ -6,12 +6,17 @@ from TreeInfo import TreeInfo
 from Transition import Transition
 from Automata import Automata
 import copy
+from helper import *
 class AFD:
     def __init__(self):
         self.fn = []
         self.initial = None
         self.final = None
         self.translator = None
+        self.table = []
+        self.finalDFA = []
+        self.language = []
+    
     def tree_to_stack(self, tree, res=[]):
         
         if tree:
@@ -39,11 +44,32 @@ class AFD:
         st.reverse()
         self.initial = st[0].first_pos
         self.createDFA(tokens)
+        self.translate()
+        
         #print("STATES", self.fn)
-
+        initial = self.fn[0]
+        initial.set_initial(True)
+        au = Automata([], self.language, initial, self.finalDFA, self.fn)
+        print("automata", au)
+        export_chart_subset(au)
+        
+        return au
         #print("done", table)
 
-        
+    def translate(self):
+        vocab = vocabulary()
+        diction = {}
+        #iteramos para armar diccionario
+        for trans in self.fn:
+            if str(trans.get_start()) not in diction.keys():
+                if trans.index:
+                    diction[str(trans.get_start())] = vocab[trans.index]
+        #iteramos otra vez para traducir
+        for trans in self.fn:
+            if trans.transition:
+                trans.set_start(diction[str(trans.get_start())])
+                trans.set_end(diction[str(trans.get_end())])
+
     def generate_tree_info(self, stackTree):
         treeInf = []
         for tree in stackTree:
@@ -94,7 +120,7 @@ class AFD:
         print("table", table)
         self.translator = translator
         #table = self.translate_table(table, stackTree)
-        self.fn = table
+        self.table = table
 
         
         return table
@@ -106,12 +132,11 @@ class AFD:
             if token.get_type() == "SYMBOL" and (token.get_value() != "#" or token.get_value() != "&"):
                 if token.get_value() not in language:
                     language.append(token.get_value())
-        
+        self.language = language
         self.build_automata(language)
+        return
     
    
-
-
     def build_automata(self, language, counter=0, checkArr=None):
         if checkArr == None:
             q0 = self.initial
@@ -143,10 +168,9 @@ class AFD:
             for letter in language:
                 if letter != "&" and letter != "#":
                     #get traversal pasa a ser la union de los follow pos de cada uno de los elem
-                    res = self.traverse(toState.get_end())
+                    res = self.traverse(toState.get_end(), letter)
                     if len(res) > 0:
                         is_in_dfa = self.search_dfa_state(res, check)
-        
                     
                         if not is_in_dfa:
                             #Creamos y pusheamos el estado al array y al dfa
@@ -155,7 +179,7 @@ class AFD:
                             counter += 1 
                             if self.final[0] in toPush_arr.get_end():
                                 toPush_arr.set_final(True)
-                            
+                                self.finalDFA.append(toPush_arr)
                             self.fn.append(toPush_arr)
                             check.append(toPush_arr)
 
@@ -177,22 +201,21 @@ class AFD:
         if not is_over:
             self.build_automata(checkArr=check, language=language ,counter=counter)
         else:
-            print("TRANS",self.fn)
-            print("Oopsie")
+            #print("TRANS",self.fn)
+            return "finished"
 
 
-
-
-    def traverse(self, state):
+    def traverse(self, state, letter):
         toReturn = []
-        for i in state:
-            for st in self.fn:
-                if i == st.get_start():
-                    if i not in toReturn:
-                        toReturn.extend(self.union(st.get_end(), toReturn))
-                        if i not in toReturn:
-                            toReturn.append(i)
-                    break
+        to_join_arr = self.translator[letter]
+        
+        for elem in to_join_arr:
+            #obtenemos los follow pos
+            for trans in self.table:
+                if elem == trans.get_start():
+                    #lo obtenemos
+                    toReturn.extend(self.union(trans.get_end(),[elem]))
+        
         return toReturn
     
     def union(self, arr1, arr2):
@@ -221,12 +244,3 @@ class AFD:
             return True
         else:
             return False
-
-
-
-        
-    
-        
-        
-
-                
