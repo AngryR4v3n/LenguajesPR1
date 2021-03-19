@@ -45,7 +45,7 @@ class PowerSet:
         # aqui deberiamos convertir todo..
 
         self.translate()
-        initial = self.fn[0]
+        initial = self.newfn[0]
         initial.set_initial(True)
         au = Automata([],[], initial, self.finalDFA, self.newfn)
         print("FINAL AFD", au)
