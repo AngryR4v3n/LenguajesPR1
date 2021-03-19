@@ -22,8 +22,8 @@ class BTree:
 
     def compute_followpos(self, table):
         if self.root == ".":
-            left = compute_last(self.left)
-            right = compute_first(self.right)
+            left = self.left.last_pos
+            right = self.right.first_pos
             """
             for i in left:
                 for num in right:
@@ -40,8 +40,8 @@ class BTree:
 
                         break
         elif self.root == "*":
-            left = compute_last(self)
-            right = compute_first(self)
+            left = self.left.last_pos
+            right = self.left.first_pos
             """
             for i in left:
                 for num in right:
@@ -55,17 +55,7 @@ class BTree:
                             if num not in trans.get_end():
                                 trans.get_end().append(num)
                         break
-        elif self.root == "+":
-            left = compute_last(self.left)
-            right = compute_first(self.left)
-            for i in left:
-                for trans in table:
-                    if(trans.get_start() == i):
-                        for num in right:
-                            if num not in trans.get_end():
-                                trans.get_end().append(num)
-                        
-                        break
+
         self.forward_pos = trans.get_end()
         return trans.get_end()
 
@@ -86,9 +76,19 @@ class BTree:
 
 def compute_positions(tree):
     print("compute tree", tree.root)
+    """try:
+        print("left values b4", tree.left.first_pos, tree.left.last_pos)
+        print("right values b4", tree.right.first_pos, tree.right.last_pos)
+    except:
+        pass"""
     f = compute_first(tree)
     l= compute_last(tree)
-    print("first", f, "last", l)
+    """try:
+        print("left values after", tree.left.first_pos, tree.left.last_pos)
+        print("right values after", tree.right.first_pos, tree.right.last_pos)
+    except:
+        pass"""
+    #print("first", f, "last", l)
 #recibe los tokens
 def generate_tree(tokensArr):
     
@@ -126,10 +126,14 @@ def generate_tree(tokensArr):
                 rightOp = stackOp.pop()
                 leftOp = stackOp.pop()
                 tree = BTree()
+                
                 tree.root = op
                 tree.left = leftOp
                 tree.right = rightOp
+                
                 compute_positions(tree)
+
+              
                 stackOp.append(tree)
         
                 

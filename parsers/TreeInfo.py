@@ -1,18 +1,27 @@
 
-
-def compute_first( tree):
+def compute_first(tree):
     if(tree.root == "|"):
+        print("left values cfb4", tree.left.first_pos, tree.left.last_pos)
+        print("right values cfb4", tree.right.first_pos, tree.right.last_pos)
         arr1 = tree.left.first_pos 
         arr2 = tree.right.first_pos
         unified = union(arr1, arr2)
         tree.first_pos = unified
+
+        print("left values cf", tree.left.first_pos, tree.left.last_pos)
+        print("right values cf", tree.right.first_pos, tree.right.last_pos)
         return unified
 
     elif(tree.root == "." and (is_nullable(tree.left))):
+        print("left values cfb4", tree.left.first_pos, tree.left.last_pos)
+        print("right values cfb4", tree.right.first_pos, tree.right.last_pos)
         arr1 = tree.left.first_pos 
         arr2 = tree.right.first_pos
         unified = union(arr1, arr2)
         tree.first_pos = unified
+
+        print("left values cf", tree.left.first_pos, tree.left.last_pos)
+        print("right values cf", tree.right.first_pos, tree.right.last_pos)
         return unified
     elif(tree.root == "." and not (is_nullable(tree.left))):
         arr1 = tree.left.first_pos 
@@ -20,7 +29,7 @@ def compute_first( tree):
         return arr1
 
     elif(tree.root == "*"):
-        arr1 = tree.left.first_pos 
+        arr1 = tree.left.first_pos
         tree.first_pos = arr1
         return arr1
     
@@ -63,62 +72,13 @@ def compute_last(tree):
         return [tree.number]
 
 
-def compute_followpos( tree, table):
-    if tree.root == ".":
-        left = compute_last(tree.left.last_pos)
-        right = compute_first(tree.right)
-        """
-        for i in left:
-            for num in right:
-                if num not in table[i]:
-                    table[i].append(num)
-        """
-        for i in left:
-            for trans in table:
-                if(trans.get_start() == i):
-                    for num in right:
-                        if num not in trans.get_end():
-                            trans.get_end().append(num)
-                
-
-                    break
-    elif tree.root == "*":
-        left = compute_last(tree)
-        right = compute_first(tree)
-        """
-        for i in left:
-            for num in right:
-                if num not in table[i]:
-                    table[i].append(num)
-        """
-        for i in left:
-            for trans in table:
-                if(trans.get_start() == i):
-                    for num in right:
-                        if num not in trans.get_end():
-                            trans.get_end().append(num)
-                    break
-    elif tree.root == "+":
-        left = compute_last(tree.left)
-        right = compute_first(tree.left)
-        for i in left:
-            for trans in table:
-                if(trans.get_start() == i):
-                    for num in right:
-                        if num not in trans.get_end():
-                            trans.get_end().append(num)
-                    break
-    if tree.left != None:
-        compute_followpos(tree.left, table)
-    if tree.right != None:
-        compute_followpos(tree.right, table)
-
 
 def union( arr1, arr2):
-    for elem in arr1:
-        if elem not in arr2:
-            arr2.append(elem)
-    return arr2
+    res = arr1.copy()
+    for elem in arr2:
+        if elem not in res:
+            res.append(elem)
+    return res
 
 def is_nullable( node):
     if node:
