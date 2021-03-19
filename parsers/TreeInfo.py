@@ -31,10 +31,7 @@ class TreeInfo:
             tree.first_pos = arr1
             return arr1
         
-        
-        elif(self.tree.root == "&"):
-            return []
-
+       
         else:
             #si es un simbolo..
             tree.first_pos = [tree.number]
@@ -65,9 +62,7 @@ class TreeInfo:
             tree.last_pos = arr1
             return arr1
         
-        elif(self.tree.root == "&"):
-            return []
-
+        
         else:
             #si es un simbolo..
             tree.last_pos = [tree.number]

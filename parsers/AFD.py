@@ -29,10 +29,26 @@ class AFD:
             
       
         return res
+    def fix_tokens(self,tokens):
+        new_tokens = []
+        for i in range(len(tokens)-1):
+            if tokens[i].get_value() == "&":
+                
+                if (tokens[i-1].get_type() == "." or tokens[i-1].get_type() == "|"):
+                    new_tokens.pop()
+                    continue
+                    
+        
+            new_tokens.append(tokens[i])
 
-    def afd_parser(self, tokens):
+        new_tokens.append(tokens[-1])
+        return new_tokens
+
+
+    def afd_parser(self, rawToken):
+        
+        tokens = self.fix_tokens(rawToken)
         print("Hi, im being passed this tokens! \n", tokens)
-
         tree = generate_tree(tokens)
         st = self.tree_to_stack(tree, [])
         
@@ -62,7 +78,7 @@ class AFD:
         #iteramos para armar diccionario
         for trans in self.fn:
             if str(trans.get_start()) not in diction.keys():
-                if trans.index:
+                if trans.index != None:
                     diction[str(trans.get_start())] = vocab[trans.index]
         #iteramos otra vez para traducir
         for trans in self.fn:

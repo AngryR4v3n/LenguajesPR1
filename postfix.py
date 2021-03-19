@@ -120,6 +120,7 @@ class Postfixer:
         fixed = ""
         posToInsert = []
         isOk = True
+        pushStack = []
         for i in range(len(expr)-1):
             #si hay parens y no es operador...ni parentesis
             if(expr[i] == ")" and expr[i+1] not in self.operators and expr[i+1] != "(" and expr[i+1] != ")"):
@@ -130,6 +131,13 @@ class Postfixer:
                 posToInsert.append(i)
             elif(expr[i] == "*" and expr[i+1] == "*"):
                 isOk = False
+            if len(pushStack)>0:
+                last_elem = pushStack[-1]
+                if last_elem == "*" and expr[i] == "*":
+                    isOk = False
+            elif(expr[i] == "*" and expr[i+1] == ")"):
+                pushStack.append(")")
+                pushStack.append("*")
             
             elif(expr[i] == "(") and (i != 0) and self.is_operand(expr[i-1]) and self.is_operand(expr[i+1]):
                
