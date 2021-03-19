@@ -216,7 +216,7 @@ class AFD:
                     #lo obtenemos
                     toReturn.extend(self.union(trans.get_end(),[elem]))
         
-        return toReturn
+        return list(set(toReturn))
     
     def union(self, arr1, arr2):
 

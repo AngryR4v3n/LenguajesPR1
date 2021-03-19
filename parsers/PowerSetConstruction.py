@@ -68,7 +68,7 @@ class PowerSet:
         
         for transition in self.fn:
             for state in states:
-                if transition.get_transition() == "&" and transition.get_start() == state:
+                if transition.get_transition() == "&" and transition.get_start() == state and transition.get_end() not in e_set:
                     e_set.append(transition.get_end())
                     self.e_closure([transition.get_end()],res=e_set)
         
