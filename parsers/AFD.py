@@ -99,19 +99,22 @@ class AFD:
         counter = 0
         #preparamos tabla
         table = []
+        #[[0, 1, 2], [0, 1, 2], [3] ..]
         for tree in stackTree:
             if tree.number != None:
-                table.append(Transition(start=tree.number, transition=None, end=[]))
+                table.append([])
+                
         #primero todos los finales
-        translator = {}
+        translator = {}    
+        
         for elem in stackTree:
            
             if elem.number != None:        
                 #translate
                 if elem.root not in translator.keys():
-                    translator[elem.root] = elem.first_pos
+                    translator[elem.root] = [elem.number]
                 else:
-                    translator[elem.root].extend(elem.first_pos) 
+                    translator[elem.root].append(elem.number)
                 
         #ahora las ops 
         counter = 0
@@ -213,20 +216,19 @@ class AFD:
 
     def traverse(self, state, letter):
         toReturn = []
-        to_join_arr = self.translator[letter]
         
-        for elem in to_join_arr:
+        
+        for elem in state:
             #obtenemos los follow pos
-            for trans in self.table:
-                if elem == trans.get_start():
-                    #lo obtenemos
-                    toReturn.extend(self.union(trans.get_end(),[elem]))
+            for elem2 in self.table[elem]:        
+                #lo obtenemos
+                toReturn.append(elem2)
         
         return list(set(toReturn))
     
     def union(self, arr1, arr2):
 
-        res = []
+        res = arr1.copy()
         for elem in arr1:
             if elem not in arr2:
                 res.append(elem)

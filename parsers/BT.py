@@ -21,50 +21,32 @@ class BTree:
 
 
     def compute_followpos(self, table):
+        print(table)
         if self.root == ".":
             left = self.left.last_pos
             right = self.right.first_pos
-            """
+           
             for i in left:
                 for num in right:
                     if num not in table[i]:
                         table[i].append(num)
-            """
-            for i in left:
-                for trans in table:
-                    if(trans.get_start() == i):
-                        for num in right:
-                            if num not in trans.get_end():
-                                trans.get_end().append(num)
                     
 
-                        break
+                       
+
         elif self.root == "*":
             left = self.left.last_pos
             right = self.left.first_pos
-            """
+           
             for i in left:
                 for num in right:
                     if num not in table[i]:
                         table[i].append(num)
-            """
-            for i in left:
-                for trans in table:
-                    if(trans.get_start() == i):
-                        for num in right:
-                            if num not in trans.get_end():
-                                trans.get_end().append(num)
-                        break
+                        
+                       
 
-        self.forward_pos = trans.get_end()
-        return trans.get_end()
+        #self.forward_pos = trans.get_end()
 
-        """
-        if self.left != None:
-            compute_followpos(self.left, table)
-        if self.right != None:
-            compute_followpos(self.right, table)
-        """
 
     def union( self, arr1, arr2):
         for elem in arr1:
@@ -75,20 +57,10 @@ class BTree:
         return f"<Tree Root: {self.root} right: {self.right} left:{self.left} \n first pos: {self.first_pos} last pos: {self.last_pos} follow pos {self.forward_pos}>"
 
 def compute_positions(tree):
-    print("compute tree", tree.root)
-    """try:
-        print("left values b4", tree.left.first_pos, tree.left.last_pos)
-        print("right values b4", tree.right.first_pos, tree.right.last_pos)
-    except:
-        pass"""
+    
     f = compute_first(tree)
     l= compute_last(tree)
-    """try:
-        print("left values after", tree.left.first_pos, tree.left.last_pos)
-        print("right values after", tree.right.first_pos, tree.right.last_pos)
-    except:
-        pass"""
-    #print("first", f, "last", l)
+    
 #recibe los tokens
 def generate_tree(tokensArr):
     
