@@ -8,11 +8,11 @@ postfixer = Postfixer()
 
 
 toBuild = "AFD"
-automata = "((1?)*)*"
+automata = "(a|b)*abb"
 if(toBuild == "AFD"):
     inFixRegEx = automata
     inFixRegEx += ".#"
-    inFixRegEx = postfixer.fix_string(inFixRegEx)
+    inFixRegEx = postfixer.to_postfix(inFixRegEx)
     builder = Builder(inFixRegEx)
 else:
     postfixRegex = postfixer.to_postfix(automata)

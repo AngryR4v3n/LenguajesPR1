@@ -2,7 +2,7 @@
 
 from BuilderEnum import BuilderEnum
 from BT import *
-from TreeInfo import TreeInfo
+from TreeInfo import *
 from Transition import Transition
 from Automata import Automata
 import copy
@@ -16,9 +16,10 @@ class AFD:
         self.table = []
         self.finalDFA = []
         self.language = []
-    
+
     def tree_to_stack(self, tree, res=[]):
-        
+        print("treetostack")
+        print(tree)
         if tree:
             res.append(tree)
         if tree.left:
@@ -26,20 +27,29 @@ class AFD:
         if tree.right:
             self.tree_to_stack(tree.right, res=res)
         
-            
+        
       
         return res
     def fix_tokens(self,tokens):
         new_tokens = []
+        popNext = False
+        add = True
         for i in range(len(tokens)-1):
+            add = True
+            
             if tokens[i].get_value() == "&":
-                
-                if (tokens[i-1].get_type() == "." or tokens[i-1].get_type() == "|"):
-                    new_tokens.pop()
+                add = False
+                if (tokens[i+1].get_type() == "." or tokens[i+1].get_type() == "|"):
+                    popNext = True
                     continue
                     
-        
-            new_tokens.append(tokens[i])
+            if add:
+                new_tokens.append(tokens[i])
+            
+            if popNext:
+                new_tokens.pop()
+                popNext = False
+
 
         new_tokens.append(tokens[-1])
         return new_tokens
@@ -48,13 +58,11 @@ class AFD:
     def afd_parser(self, rawToken):
         
         tokens = self.fix_tokens(rawToken)
-        print("Hi, im being passed this tokens! \n", tokens)
+        #print("Hi, im being passed this tokens! \n", tokens)
         tree = generate_tree(tokens)
         st = self.tree_to_stack(tree, [])
-        
         st.reverse()
-        treeInfo = self.generate_tree_info(st)
-        table = self.compute_positions(treeInfo, st)
+        table = self.compute_positions(st)
         #we turn it around to have depth first..
         self.final = st[0].first_pos
         st.reverse()
@@ -86,50 +94,32 @@ class AFD:
                 trans.set_start(diction[str(trans.get_start())])
                 trans.set_end(diction[str(trans.get_end())])
 
-    def generate_tree_info(self, stackTree):
-        treeInf = []
-        for tree in stackTree:
-            unit = TreeInfo(tree)
-            treeInf.append(unit)
 
-        return treeInf
-
-    def compute_positions(self, stackTree, treeObjs):
+    def compute_positions(self, stackTree):
         counter = 0
         #preparamos tabla
         table = []
         for tree in stackTree:
-            if tree.tree.number:
-                table.append(Transition(start=tree.tree.number, transition=None, end=[]))
+            if tree.number != None:
+                table.append(Transition(start=tree.number, transition=None, end=[]))
         #primero todos los finales
         translator = {}
-        while counter < len(stackTree):
+        for elem in stackTree:
            
-            if stackTree[counter].tree.number != None:
-                #FIRST POS
-                stackTree[counter].compute_first(treeObjs[counter])
-                #LAST POS
-                stackTree[counter].compute_last(treeObjs[counter])
-                
+            if elem.number != None:        
                 #translate
-                if stackTree[counter].tree.root not in translator.keys():
-                    translator[stackTree[counter].tree.root] = stackTree[counter].first_pos
+                if elem.root not in translator.keys():
+                    translator[elem.root] = elem.first_pos
                 else:
-                    translator[stackTree[counter].tree.root].extend(stackTree[counter].first_pos) 
+                    translator[elem.root].extend(elem.first_pos) 
                 
-            
-            counter += 1
-        
-
         #ahora las ops 
         counter = 0
-        while counter < len(stackTree):
+        for elem in stackTree:
             #FIRST POS
-            if stackTree[counter].tree.number == None:
-                stackTree[counter].compute_first(treeObjs[counter])
+            if elem.number == None:
                 #LAST POS
-                stackTree[counter].compute_last(treeObjs[counter])
-                stackTree[counter].compute_followpos(treeObjs[counter], table)
+                elem.compute_followpos(table)
             
             counter += 1
 
@@ -145,7 +135,7 @@ class AFD:
     def createDFA(self, tokens):
         language = []
         for token in tokens:
-            if token.get_type() == "SYMBOL" and (token.get_value() != "#" or token.get_value() != "&"):
+            if token.get_type() == "SYMBOL" and (token.get_value() != "&"):
                 if token.get_value() not in language:
                     language.append(token.get_value())
         self.language = language

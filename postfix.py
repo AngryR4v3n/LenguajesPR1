@@ -69,8 +69,6 @@ class Postfixer:
 
 
     def fix_operators(self, expr):
-        
-        
 
         new = ""
         index = 0
@@ -126,37 +124,37 @@ class Postfixer:
             if(expr[i] == ")" and expr[i+1] not in self.operators and expr[i+1] != "(" and expr[i+1] != ")"):
                 posToInsert.append(i)
             
-            elif(self.is_operand(expr[i]) and self.is_operand(expr[i+1])):
+            if(self.is_operand(expr[i]) and self.is_operand(expr[i+1])):
                 
                 posToInsert.append(i)
-            elif(expr[i] == "*" and expr[i+1] == "*"):
+            if(expr[i] == "*" and expr[i+1] == "*"):
                 isOk = False
             if len(pushStack)>0:
                 last_elem = pushStack[-1]
                 if last_elem == "*" and expr[i] == "*":
                     isOk = False
-            elif(expr[i] == "*" and expr[i+1] == ")"):
+            if(expr[i] == "*" and expr[i+1] == ")"):
                 pushStack.append(")")
                 pushStack.append("*")
             
-            elif(expr[i] == "(") and (i != 0) and self.is_operand(expr[i-1]) and self.is_operand(expr[i+1]):
+            if(expr[i] == "(") and (i != 0) and self.is_operand(expr[i-1]) and self.is_operand(expr[i+1]):
                
                 posToInsert.append(i-1)
 
-            elif((expr[i] == "*" or expr[i] == "+") and self.is_operand(expr[i+1]) and (expr[i+1] != "(" or expr[i+1] != ")")):
+            if((expr[i] == "*" or expr[i] == "+") and self.is_operand(expr[i+1]) and (expr[i+1] != "(" or expr[i+1] != ")")):
                 
                 posToInsert.append(i)
 
-            elif((expr[i] == "*" or expr[i] == "+") and (expr[i-1] == ")" and expr[i+1]) == "("):
+            if((expr[i] == "*" or expr[i] == "+") and (expr[i-1] == ")" and expr[i+1]) == "("):
                 posToInsert.append(i)
 
-            elif(expr[i] == "*" and expr[i+1] == "("):
+            if(expr[i] == "*" and expr[i+1] == "("):
                 posToInsert.append(i)
 
-            elif(expr[i] == ")" and expr[i+1] == "("):
+            if(expr[i] == ")" and expr[i+1] == "("):
                 posToInsert.append(i)
 
-            elif(expr[i] == "." and (not self.is_operand(expr[i+1]))):
+            if(expr[i] == "." and (not self.is_operand(expr[i+1]))):
                 fixed += "&"
 
             if(isOk):

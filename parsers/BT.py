@@ -1,5 +1,6 @@
 from stack import Stack
 from BuilderEnum import BuilderEnum
+from TreeInfo import *
 class BTree:
     def __init__(self):
         #Structure
@@ -17,14 +18,82 @@ class BTree:
     def set_number(self, number):
         self.number = number
 
-    def __repr__(self):
-        return f"<Tree Root: {self.root} right: {self.right} left:{self.left}"
 
+
+    def compute_followpos(self, table):
+        if self.root == ".":
+            left = compute_last(self.left)
+            right = compute_first(self.right)
+            """
+            for i in left:
+                for num in right:
+                    if num not in table[i]:
+                        table[i].append(num)
+            """
+            for i in left:
+                for trans in table:
+                    if(trans.get_start() == i):
+                        for num in right:
+                            if num not in trans.get_end():
+                                trans.get_end().append(num)
+                    
+
+                        break
+        elif self.root == "*":
+            left = compute_last(self)
+            right = compute_first(self)
+            """
+            for i in left:
+                for num in right:
+                    if num not in table[i]:
+                        table[i].append(num)
+            """
+            for i in left:
+                for trans in table:
+                    if(trans.get_start() == i):
+                        for num in right:
+                            if num not in trans.get_end():
+                                trans.get_end().append(num)
+                        break
+        elif self.root == "+":
+            left = compute_last(self.left)
+            right = compute_first(self.left)
+            for i in left:
+                for trans in table:
+                    if(trans.get_start() == i):
+                        for num in right:
+                            if num not in trans.get_end():
+                                trans.get_end().append(num)
+                        
+                        break
+        self.forward_pos = trans.get_end()
+        return trans.get_end()
+
+        """
+        if self.left != None:
+            compute_followpos(self.left, table)
+        if self.right != None:
+            compute_followpos(self.right, table)
+        """
+
+    def union( self, arr1, arr2):
+        for elem in arr1:
+            if elem not in arr2:
+                arr2.append(elem)
+        return arr2
+    def __repr__(self):
+        return f"<Tree Root: {self.root} right: {self.right} left:{self.left} \n first pos: {self.first_pos} last pos: {self.last_pos} follow pos {self.forward_pos}>"
+
+def compute_positions(tree):
+    print("compute tree", tree.root)
+    f = compute_first(tree)
+    l= compute_last(tree)
+    print("first", f, "last", l)
 #recibe los tokens
 def generate_tree(tokensArr):
     
     output = []
-    stackOp = Stack()
+    stackOp = []
     counter = 0
 
     for token in tokensArr:
@@ -35,70 +104,37 @@ def generate_tree(tokensArr):
             tree.left = None
             tree.right = None
             tree.number = counter
-            
-            output.append(tree)
-            
-        elif token.get_type() == "(":
-            #we add it to the stack op which will have track of all operations to be done
-            stackOp.add(token.get_type())
-        
-        elif token.get_type() == ")":
+            compute_positions(tree)
+            stackOp.append(tree)
+            counter += 1
 
-            while stackOp.length() > 0 and stackOp.peek() != "(":
-                #empty until finding the "(", meanwhile we create the necessary trees
-                rightOp = output.pop()
-                leftOp = output.pop()
-                op = stackOp.pop()
-                tree = BTree()
-                tree.root = op
-                tree.left = leftOp
-                tree.right = rightOp
-                
-                output.append(tree)
-            stackOp.pop()
-        else:
-            #needs only one operator, special case
-            if token.get_type() == "*" or token.get_type() == "+":
-                uniOp = output.pop()
+        elif(token.get_type() != "SYMBOL"):
+            if token.get_type() == "*":
+                uniOp = stackOp.pop()
                 tree = BTree()
                 tree.root = token.get_type()
                 tree.left = uniOp
                 tree.right = None
+                compute_positions(tree)
+                stackOp.append(tree)
             
-                output.append(tree)
-            #any other kind of operation of two operators ..
-            else:
-                while stackOp.length() > 0 and stackOp.peek() != '(':
-                    op = stackOp.pop()
-                    rightOp = output.pop()
-                    leftOp = output.pop()
-                    tree = BTree()
-                    tree.root = op
-                    tree.left = leftOp
-                    tree.right = rightOp
-                    
-                    output.append(tree)
-                #if its a symbol, get value, if not, get the type (where the char is stored)
-                if(token.get_type() != "SYMBOL"):
-                    stackOp.add(token.get_type())
 
-                elif(token.get_type() == "SYMBOL"):
-                    stackOp.add(token.get_value())
+            #any other kind of operation of two operators ..
+            
+            else:
+                op = token.get_type()
+                rightOp = stackOp.pop()
+                leftOp = stackOp.pop()
+                tree = BTree()
+                tree.root = op
+                tree.left = leftOp
+                tree.right = rightOp
+                compute_positions(tree)
+                stackOp.append(tree)
         
-        counter += 1
+                
         
-    #while theres sth in the stack..
-    while stackOp.length() > 0:
-        rightOp = output.pop()
-        leftOp = output.pop()
-        op = stackOp.pop()
-        tree = BTree()
-        tree.root = op
-        tree.left = leftOp
-        tree.right = rightOp
         
-        output.append(tree)
-        counter += 1
     
 
-    return output[-1]
+    return stackOp[-1]
