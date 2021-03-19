@@ -7,7 +7,7 @@ postfixer = Postfixer()
 
 
 
-toBuild = "Thompson"
+toBuild = "PowerSet"
 automata = "(a|b)*a(a|b)(a|b)+"
 if(toBuild == "AFD"):
     inFixRegEx = automata

@@ -31,6 +31,13 @@ class PowerSet:
         vocab = vocabulary()
         diction = {}
         #iteramos para armar diccionario
+
+        #en caso de overflow
+        numb = len(self.newfn) - len(vocab) #un numero 30 digamos
+        if numb > 0:
+            for num in range(numb):
+                vocab.append("Z"+str(num))
+
         for trans in self.newfn:
             if str(trans.get_start()) not in diction.keys():
                 diction[str(trans.get_start())] = vocab[trans.index]
@@ -65,7 +72,7 @@ class PowerSet:
                     e_set.append(transition.get_end())
                     self.e_closure([transition.get_end()],res=e_set)
         
-        return e_set
+        return list(set(e_set))
 
     
     def search_by_start(self, arrState):
@@ -205,12 +212,9 @@ class PowerSet:
     def get_traversal(self, arr, letter):
         answer = []
         subset = self.traverse(arr, letter)
-        for final in subset:
-            answer.append(final)
-            #print("to", answer)   
 
         
-        return answer
+        return list(set(subset))
 
 
 
