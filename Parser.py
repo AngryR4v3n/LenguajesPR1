@@ -76,7 +76,7 @@ class Parser:
         else:
             return False
 """
-receives format or method for interpreting(?) the RegEx
+receives format or method for interpreting(.) the RegEx
 """
 def get_parser(format):
     if format == "AFD":

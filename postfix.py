@@ -3,6 +3,7 @@ import os
 from BuilderEnum import BuilderEnum
 sys.path.append(os.path.abspath(os.path.join("parsers")))
 from stack import Stack
+from helper import find_all
 """
 Basado en https://www.free-online-calculator-use.com/infix-to-postfix-converter.html#
 """
@@ -14,6 +15,7 @@ class Postfixer:
         self.precedence = {
             self.enums.KLEENE.value: 3,
             self.enums.PLUS.value: 2,
+            self.enums.ASK.value: 1,
             self.enums.CONCAT.value: 1,
             self.enums.OR.value: 1,
         }
@@ -22,7 +24,8 @@ class Postfixer:
             self.enums.KLEENE.value, 
             self.enums.PLUS.value,
             self.enums.OR.value,
-            self.enums.CONCAT.value
+            self.enums.CONCAT.value,
+            self.enums.ASK.value
         ]
     
     
@@ -39,8 +42,81 @@ class Postfixer:
             return True if a <= b else False
         except KeyError:
             return False
+
+    def get_symbol(self, expr):
+        
+        parens = False
+        if expr[-1] == ")":
+            parens = True
+
+        stack = []
+
+        index = -1
+        for i in range(len(expr)-1,-1,-1):
+            char = expr[i]
+            if not parens:
+                if self.is_operand(char) and char not in ["(", ")"]:
+                    return i, char
+
+            else:
+                if char == ")":
+                    stack.append(char)
+                elif char == "(":
+                    stack.pop()
+                    if not stack:
+                        index = i
+                        return index, "(" + expr[i+1:]
+
+
+    def fix_operators(self, expr):
+        
+        
+
+        new = ""
+        index = 0
+        for i in range(len(expr)):
+            if expr[i]==self.enums.PLUS.value:
+                #obtenemos lo que este a la izq
+                
+                index, last = self.get_symbol(expr[:i])
+                
+                #left operator . left operator*
+                add="(" + last + last + ")"+"*"
+                decider = expr[:i]
+                if decider[-1] == ")":
+                    new += add
+                else:
+                    new = new[:len(new) -1 ]
+                    new += add
+                
+                
+                continue
+            elif expr[i]==self.enums.ASK.value:
+                index, last = self.get_symbol(expr[:i])
+                
+                #left operator (r | e) 
+                add="(" + last + "|" + "&"")"
+                decider = expr[:i]
+                if decider[-1] == ")":
+                    new += add
+                else:
+                    new = new[:len(new) -1 ]
+                    new += add
+                
+               
+                
+                continue
+            if i+1< len(expr):
+                if expr[i+1] != self.enums.ASK.value or expr[i+1] != self.enums.PLUS.value:
+                    new += expr[i]
+            else: 
+                if expr[-1] != self.enums.ASK.value or expr[-1] != self.enums.PLUS.value:
+                    new += expr[i]
     
+        return new
+        
     def fix_string(self, expr):
+        expr = self.fix_operators(expr)
         fixed = ""
         posToInsert = []
         isOk = True
@@ -72,7 +148,7 @@ class Postfixer:
             elif(expr[i] == ")" and expr[i+1] == "("):
                 posToInsert.append(i)
 
-            elif(expr[i] == "?" and (not self.is_operand(expr[i+1]))):
+            elif(expr[i] == "." and (not self.is_operand(expr[i+1]))):
                 fixed += "&"
 
             if(isOk):

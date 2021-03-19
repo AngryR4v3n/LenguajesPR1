@@ -89,7 +89,7 @@ class AFD:
         translator = {}
         while counter < len(stackTree):
            
-            if stackTree[counter].tree.number:
+            if stackTree[counter].tree.number != None:
                 #FIRST POS
                 stackTree[counter].compute_first(treeObjs[counter])
                 #LAST POS
@@ -109,7 +109,7 @@ class AFD:
         counter = 0
         while counter < len(stackTree):
             #FIRST POS
-            if not stackTree[counter].tree.number:
+            if stackTree[counter].tree.number == None:
                 stackTree[counter].compute_first(treeObjs[counter])
                 #LAST POS
                 stackTree[counter].compute_last(treeObjs[counter])

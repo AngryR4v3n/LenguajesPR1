@@ -15,13 +15,13 @@ class TreeInfo:
             tree.first_pos = unified
             return unified
 
-        elif(tree.root == "?" and (self.is_nullable(tree.left))):
+        elif(tree.root == "." and (self.is_nullable(tree.left))):
             arr1 = tree.left.first_pos 
             arr2 = tree.right.first_pos
             unified = self.union(arr1, arr2)
             tree.first_pos = unified
             return unified
-        elif(tree.root == "?" and not (self.is_nullable(tree.left))):
+        elif(tree.root == "." and not (self.is_nullable(tree.left))):
             arr1 = tree.left.first_pos 
             tree.first_pos = arr1
             return arr1
@@ -30,6 +30,7 @@ class TreeInfo:
             arr1 = tree.left.first_pos 
             tree.first_pos = arr1
             return arr1
+        
         
         elif(self.tree.root == "&"):
             return []
@@ -48,13 +49,13 @@ class TreeInfo:
             tree.last_pos = unified
             return unified
 
-        elif(tree.root == "?" and (self.is_nullable(tree.right))):
+        elif(tree.root == "." and (self.is_nullable(tree.right))):
             arr1 = tree.left.last_pos 
             arr2 = tree.right.last_pos
             unified = self.union(arr1, arr2)
             tree.last_pos = unified
             return unified
-        elif(tree.root == "?" and not (self.is_nullable(tree.right))):
+        elif(tree.root == "." and not (self.is_nullable(tree.right))):
             arr1 = tree.right.last_pos 
             tree.last_pos = arr1
             return arr1
@@ -75,7 +76,7 @@ class TreeInfo:
 
 
     def compute_followpos(self, tree, table):
-        if tree.root == "?":
+        if tree.root == ".":
             left = self.compute_last(tree.left)
             right = self.compute_first(tree.right)
             """
@@ -144,7 +145,7 @@ class TreeInfo:
                 right = node.right.nullable
                 return left or right
 
-            elif node.root == "?":
+            elif node.root == ".":
                 left = node.left.nullable
                 right = node.right.nullable
                 return left and right
