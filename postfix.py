@@ -81,7 +81,7 @@ class Postfixer:
                 index, last = self.get_symbol(expr[:i])
                 
                 #left operator . left operator*
-                add="(" + last + last + ")"+"*"
+                add= last + last +"*"
                 decider = expr[:i]
                 if decider[-1] == ")":
                     new += add
