@@ -31,22 +31,22 @@ def main():
         
         if opt == "1" or opt == "2" or opt == "3":
             automata = input("Please type your RegEx: ") 
-            res = generate(toBuild, automata)
+            res = generate(toBuild, automata, True)
             while res == -1:
                 automata = input("Please type your RegEx: ") 
-                res = generate(toBuild, automata)
+                res = generate(toBuild, automata, True)
 
         elif opt == "4":
             toBuild = "Thompson"
             automata = input("Type RegEx to simulate: ")
-            res = generate(toBuild, automata)
+            res = generate(toBuild, automata, false)
             simulator(res, True)
 
 
         elif opt == "5":
             toBuild = "PowerSet"
             automata = input("Type RegEx to simulate: ")
-            res = generate(toBuild, automata)
+            res = generate(toBuild, automata, false)
             simulator(res, False)
     else:
         print("bye!")
@@ -55,7 +55,7 @@ def main():
 #toBuild = "AFD"
 #automata = "(a|b)*abb"
 
-def generate(toBuild, automata): 
+def generate(toBuild, automata, paint): 
     postfixer = Postfixer()
     if(toBuild == "AFD"):
         inFixRegEx = "("+automata+")"
@@ -71,7 +71,7 @@ def generate(toBuild, automata):
     tokens = builder.getTokenArr()
     parser = Parser()
 
-    return parser.parse(tokens, toBuild, False)
+    return parser.parse(tokens, toBuild, paint)
 
 def simulator(automata, isNfa):
     string = input("Type the string to test: ")

@@ -20,6 +20,7 @@ class Parser:
         
         if not self.isCorrect(tokenArr):
             print("Error: wrong input syntax!")
+            print("Parenthesis mismatch!")
             return -1
         else:
             parser = get_parser(format)
