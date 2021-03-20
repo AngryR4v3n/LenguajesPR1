@@ -39,14 +39,14 @@ def main():
         elif opt == "4":
             toBuild = "Thompson"
             automata = input("Type RegEx to simulate: ")
-            res = generate(toBuild, automata, false)
+            res = generate(toBuild, automata, False)
             simulator(res, True)
 
 
         elif opt == "5":
             toBuild = "PowerSet"
             automata = input("Type RegEx to simulate: ")
-            res = generate(toBuild, automata, false)
+            res = generate(toBuild, automata, False)
             simulator(res, False)
     else:
         print("bye!")
@@ -92,12 +92,12 @@ def simulator(automata, isNfa):
 main()
 def test():
     postfixer = Postfixer()
-    postfixRegex = postfixer.to_postfix("a|b")
+    postfixRegex = postfixer.to_postfix("((1?)*)*")
     builder = Builder(postfixRegex)
     #paso de generar tokens
     builder.generator()
     #array de tokens devuelto por
     tokens = builder.getTokenArr()
     parser = Parser()
-    parser.parse(tokens, "PowerSet", True)
+    parser.parse(tokens, "Thompson", False)
 #test()

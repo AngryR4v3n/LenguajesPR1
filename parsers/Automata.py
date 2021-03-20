@@ -75,7 +75,7 @@ class Automata:
     def traverse_dfa(self, state, letter):
         toReturn = "bad"
         for st in self.fn:
-            if state.get_start() == state.get_start() and st.get_transition() == letter:
+            if st.get_start() == state and st.get_transition() == letter:
                 toReturn = st.get_end()
         return toReturn
 
