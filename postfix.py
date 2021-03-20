@@ -3,7 +3,7 @@ import os
 from BuilderEnum import BuilderEnum
 sys.path.append(os.path.abspath(os.path.join("parsers")))
 from stack import Stack
-from helper import find_all
+
 """
 Basado en https://www.free-online-calculator-use.com/infix-to-postfix-converter.html#
 """
@@ -14,9 +14,9 @@ class Postfixer:
         self.enums = BuilderEnum
         self.precedence = {
             self.enums.KLEENE.value: 3,
-            self.enums.PLUS.value: 2,
-            self.enums.ASK.value: 1,
-            self.enums.CONCAT.value: 1,
+            self.enums.PLUS.value: 3,
+            self.enums.ASK.value: 3,
+            self.enums.CONCAT.value: 2,
             self.enums.OR.value: 1,
         }
         self.checkOperands = 0

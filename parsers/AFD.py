@@ -143,6 +143,12 @@ class AFD:
                     language.append(token.get_value())
         self.language = language
         self.build_automata(language)
+
+        for x in self.fn:
+            if self.final[0] in x.get_start():
+                x.set_final(True)
+                break
+        
         return
     
    
@@ -186,9 +192,10 @@ class AFD:
                             toPush_arr = Transition(start=toState.get_end(), transition=letter, end=res)
                             toPush_arr.set_index(counter)
                             counter += 1 
-                            if self.final[0] in toPush_arr.get_end():
-                                toPush_arr.set_final(True)
-                                self.finalDFA.append(toPush_arr)
+                            
+                            
+                            
+                            
                             self.fn.append(toPush_arr)
                             check.append(toPush_arr)
 
@@ -198,10 +205,15 @@ class AFD:
                             createState = Transition(start=toState.get_end(), transition=letter, end=res)
                             createState.set_index(counter)
                             counter += 1 
-                            if self.final[0] in createState.get_start():
-                                createState.set_final(True)
                             
                             self.fn.append(createState)
+                    
+                    """
+                    if self.final[0] in res:
+                        target = Transition(start=)
+                        target.set_final(True)
+                        self.finalDFA.append(target)
+                    """
                 else:
                     continue
         
@@ -214,16 +226,20 @@ class AFD:
             return "finished"
 
 
+    def change_translator(self, value):
+        for key, values in self.translator.items():
+            if value in values:
+                return key
+
     def traverse(self, state, letter):
         toReturn = []
-        
-        
-        for elem in state:
-            #obtenemos los follow pos
-            for elem2 in self.table[elem]:        
-                #lo obtenemos
-                toReturn.append(elem2)
-        
+        #obtenemos los follow pos
+        for elem in state:        
+            #obtenemos letra
+            letra = self.change_translator(elem)
+            if letra == letter:
+                toReturn += self.table[elem]
+    
         return list(set(toReturn))
     
     def union(self, arr1, arr2):
@@ -241,6 +257,12 @@ class AFD:
                 return True
                 break
         return False
+
+
+    def return_dfa_by_start(self, start):
+        for existing in self.fn:
+            if start == existing.get_start():
+                return existing
             
     def is_over(self, dfa):
         counter = 0
