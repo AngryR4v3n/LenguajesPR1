@@ -48,14 +48,70 @@ class Automata:
         if trans.get_transition() not in self.language and trans.get_transition() != None:
             self.language.append(trans.get_transition())
 
-    def update_everything(self):
-        for trans in self.fn:
-            self.add_state(trans)
 
+    def e_closure(self, states, res=[]):
+        e_set = res
+        for state in states:
+            if state not in e_set:
+                e_set.append(state)
+        
+        for transition in self.fn:
+            for state in states:
+                if transition.get_transition() == "&" and transition.get_start() == state and transition.get_end() not in e_set:
+                    e_set.append(transition.get_end())
+                    self.e_closure([transition.get_end()],res=e_set)
+        
+        return list(set(e_set))
+
+    def traverse(self, state, letter):
+        toReturn = []
+        for i in state:
+            for st in self.fn:
+                if i == st.get_start() and st.get_transition() == letter:
+                    toReturn.append(st.get_end())
+        return list(set(toReturn))
+
+
+    def traverse_dfa(self, state, letter):
+        toReturn = "bad"
+        for st in self.fn:
+            if state.get_start() == state.get_start() and st.get_transition() == letter:
+                toReturn = st.get_end()
+        return toReturn
+
+    def get_traversal(self, arr, letter):
+        answer = []
+        subset = self.traverse(arr, letter)
+
+        
+        return list(set(subset))
+
+    def simulate_NFA(self, string):
+        S = self.e_closure([self.start])
+
+        for c in string:
+            S = self.e_closure(self.get_traversal(S, c))
+
+        if self.end in S:
+            return 1
+        else: 
+            return 0
+
+        print(S)
     
+    def simulate_DFA(self, string):
+        S = self.start
+        for c in string:
+            S = self.traverse_dfa(S,c)
+
+        for elem in self.end:
+            if S in elem.get_start():
+                return 1
+            else:
+                return 0
         
     def __repr__(self):
-        return f"\n<Automata fn: {self.fn} with language: {self.language} states: {self.states}>\n STARTING NODE: {self.start.get_start()}, END STATES: {self.end}"
+        return f"\n<Automata fn: {self.fn} with language: {self.language} states: {self.states}>\n STARTING NODE: {self.start}, END STATES: {self.end}"
         
         
 

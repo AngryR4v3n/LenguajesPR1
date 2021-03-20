@@ -41,12 +41,14 @@ class PowerSet:
         for trans in self.newfn:
             if str(trans.get_start()) not in diction.keys():
                 diction[str(trans.get_start())] = vocab[trans.index]
+            if str(trans.get_end()) not in diction.keys():
+                diction[str(trans.get_end())] = vocab[trans.index]
         #iteramos otra vez para traducir
         for trans in self.newfn:
             trans.set_start(diction[str(trans.get_start())])
             trans.set_end(diction[str(trans.get_end())])
         
-    def subset_parser(self, auto):
+    def subset_parser(self, auto, paint):
         self.prepare(auto)
         self.build_automata(automata=auto)
         # aqui deberiamos convertir todo..
@@ -55,9 +57,11 @@ class PowerSet:
         initial = self.newfn[0]
         initial.set_initial(True)
         au = Automata([],[], initial, self.finalDFA, self.newfn)
-        print("FINAL AFD", au)
+        print("PowerSet AFD", au)
         #au.update_everything()
-        export_chart_subset(au)
+        if paint:
+            export_chart_subset(au)
+        
         return au
 
     def e_closure(self, states, res=[]):
@@ -147,7 +151,7 @@ class PowerSet:
                             toPush_arr = Transition(start=toState.get_end(), transition=letter, end=closure)
                             toPush_arr.set_index(counter)
                             counter += 1 
-                            if self.final in toPush_arr.get_start():
+                            if self.final in toPush_arr.get_end():
                                 toPush_arr.set_final(True)
                                 self.finalDFA.append(toPush_arr)
                             

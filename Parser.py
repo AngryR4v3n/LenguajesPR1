@@ -16,30 +16,31 @@ class Parser:
     def __init__(self):
         self.enums = BuilderEnum
 
-    def parse(self, tokenArr, format):
+    def parse(self, tokenArr, format, paint):
         
         if not self.isCorrect(tokenArr):
             print("Error: wrong input syntax!")
-            exit(-1)
+            return -1
         else:
             parser = get_parser(format)
 
             if format == "Thompson":
 
-                automata = parser(tokenArr)
+                automata = parser(tokenArr, paint)
                 
                 #automata.build_automata()
 
             if format == "PowerSet":
                 thompson = Thompson()
                 au = thompson.thompson_export(tokenArr)
-                automata = parser(au)
-
-
+                automata = parser(au, paint)
+                
 
             if format == "AFD":
-                automata = parser(tokenArr)
+                automata = parser(tokenArr, paint)
                 #return powerSet.build_automata()
+            
+            return automata
 
     def isCorrect(self, tkk):
         #here we check if usage of parens is correct.

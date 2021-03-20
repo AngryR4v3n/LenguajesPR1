@@ -1,8 +1,5 @@
 from graphviz import Digraph
 
-def export_txt():
-    print("hola")
-
 """
 Example extracted from: https://graphviz.readthedocs.io/en/stable/examples.html#fsm-py
 """
@@ -51,3 +48,4 @@ def vocabulary():
         "R", "S", "T", "U", "V", "W", "X", "Y", "Z"
     ]
     return arr
+

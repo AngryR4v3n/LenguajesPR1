@@ -19,24 +19,38 @@ def main():
     print("6. Exit")
     print("=========================================")
     print("=========================================")
-    while x:
-        opt = input("Choose one of the following functions:")
-
-        if opt != "6":
-            
-            if opt == "1":
-                toBuild = "Thompson"
-            elif opt == "2":
-                toBuild = "PowerSet"
-            elif opt == "3":
-                toBuild = "AFD"
-            
-            if opt == "1" or opt == "2" or opt == "3":
+    opt = input("Type the number of the functionality you want to use: ")
+    if opt != "6":
+        
+        if opt == "1":
+            toBuild = "Thompson"
+        elif opt == "2":
+            toBuild = "PowerSet"
+        elif opt == "3":
+            toBuild = "AFD"
+        
+        if opt == "1" or opt == "2" or opt == "3":
+            automata = input("Please type your RegEx: ") 
+            res = generate(toBuild, automata)
+            while res == -1:
                 automata = input("Please type your RegEx: ") 
-                generate(toBuild, automata)
-        else:
-            print("bye!")
-            exit(0)
+                res = generate(toBuild, automata)
+
+        elif opt == "4":
+            toBuild = "Thompson"
+            automata = input("Type RegEx to simulate: ")
+            res = generate(toBuild, automata)
+            simulator(res, True)
+
+
+        elif opt == "5":
+            toBuild = "PowerSet"
+            automata = input("Type RegEx to simulate: ")
+            res = generate(toBuild, automata)
+            simulator(res, False)
+    else:
+        print("bye!")
+        exit(0)
 
 #toBuild = "AFD"
 #automata = "(a|b)*abb"
@@ -57,7 +71,33 @@ def generate(toBuild, automata):
     tokens = builder.getTokenArr()
     parser = Parser()
 
-    parser.parse(tokens, toBuild)
+    return parser.parse(tokens, toBuild, False)
 
+def simulator(automata, isNfa):
+    string = input("Type the string to test: ")
+    print("Simulating: \n", automata)
+    if isNfa:
+        ans = automata.simulate_NFA(string)
+        if ans > 0:
+            print("yes")
+        else: 
+            print("no")
+    else:
+        ans = automata.simulate_DFA(string)
+        if ans > 0:
+            print("yes")
+        else:
+            print("no")
 
 main()
+def test():
+    postfixer = Postfixer()
+    postfixRegex = postfixer.to_postfix("a|b")
+    builder = Builder(postfixRegex)
+    #paso de generar tokens
+    builder.generator()
+    #array de tokens devuelto por
+    tokens = builder.getTokenArr()
+    parser = Parser()
+    parser.parse(tokens, "PowerSet", True)
+#test()

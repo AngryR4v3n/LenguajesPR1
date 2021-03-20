@@ -259,15 +259,16 @@ class Thompson:
         return stack
 
 
-    def thompson_parser(self, tokens):
-        print("Hi, im being passed these tokens! \n", tokens)
+    def thompson_parser(self, tokens, paint):
+        #print("Hi, im being passed these tokens! \n", tokens)
         nfa = self.evalPostfix(tokens)
         nfa = self.empty_stack(nfa)
         #print("FINAL",nfa)
         res = nfa.pop()
         #print("RES", res)
         #export a imagen
-        export_chart(res)
+        if paint:
+            export_chart(res)
         return res
     
     def thompson_export(self, tokens):

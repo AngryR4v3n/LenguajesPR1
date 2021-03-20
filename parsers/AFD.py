@@ -1,5 +1,3 @@
-
-
 from BuilderEnum import BuilderEnum
 from BT import *
 from TreeInfo import *
@@ -18,8 +16,6 @@ class AFD:
         self.language = []
 
     def tree_to_stack(self, tree, res=[]):
-        print("treetostack")
-        print(tree)
         if tree:
             res.append(tree)
         if tree.left:
@@ -55,7 +51,7 @@ class AFD:
         return new_tokens
 
 
-    def afd_parser(self, rawToken):
+    def afd_parser(self, rawToken, paint):
         
         tokens = self.fix_tokens(rawToken)
         #print("Hi, im being passed this tokens! \n", tokens)
@@ -75,7 +71,9 @@ class AFD:
         initial.set_initial(True)
         au = Automata([], self.language, initial, self.finalDFA, self.fn)
         print("automata", au)
-        export_chart_subset(au)
+
+        if paint:
+            export_chart_subset(au)
         
         return au
         #print("done", table)
@@ -126,7 +124,7 @@ class AFD:
             
             counter += 1
 
-        print("table", table)
+        
         self.translator = translator
         #table = self.translate_table(table, stackTree)
         self.table = table
@@ -192,14 +190,8 @@ class AFD:
                             toPush_arr = Transition(start=toState.get_end(), transition=letter, end=res)
                             toPush_arr.set_index(counter)
                             counter += 1 
-                            
-                            
-                            
-                            
                             self.fn.append(toPush_arr)
-                            check.append(toPush_arr)
-
-                            
+                            check.append(toPush_arr)       
                     
                         else:
                             createState = Transition(start=toState.get_end(), transition=letter, end=res)
@@ -207,13 +199,6 @@ class AFD:
                             counter += 1 
                             
                             self.fn.append(createState)
-                    
-                    """
-                    if self.final[0] in res:
-                        target = Transition(start=)
-                        target.set_final(True)
-                        self.finalDFA.append(target)
-                    """
                 else:
                     continue
         
@@ -242,14 +227,6 @@ class AFD:
     
         return list(set(toReturn))
     
-    def union(self, arr1, arr2):
-
-        res = arr1.copy()
-        for elem in arr1:
-            if elem not in arr2:
-                res.append(elem)
-        return res
-
 
     def search_dfa_state(self, state, stateRepo):
         for existing in stateRepo:

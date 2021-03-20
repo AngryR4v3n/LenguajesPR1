@@ -1,27 +1,17 @@
 
 def compute_first(tree):
     if(tree.root == "|"):
-        print("left values cfb4", tree.left.first_pos, tree.left.last_pos)
-        print("right values cfb4", tree.right.first_pos, tree.right.last_pos)
         arr1 = tree.left.first_pos 
         arr2 = tree.right.first_pos
         unified = union(arr1, arr2)
         tree.first_pos = unified
-
-        print("left values cf", tree.left.first_pos, tree.left.last_pos)
-        print("right values cf", tree.right.first_pos, tree.right.last_pos)
         return unified
 
     elif(tree.root == "." and (is_nullable(tree.left))):
-        print("left values cfb4", tree.left.first_pos, tree.left.last_pos)
-        print("right values cfb4", tree.right.first_pos, tree.right.last_pos)
         arr1 = tree.left.first_pos 
         arr2 = tree.right.first_pos
         unified = union(arr1, arr2)
         tree.first_pos = unified
-
-        print("left values cf", tree.left.first_pos, tree.left.last_pos)
-        print("right values cf", tree.right.first_pos, tree.right.last_pos)
         return unified
     elif(tree.root == "." and not (is_nullable(tree.left))):
         arr1 = tree.left.first_pos 
