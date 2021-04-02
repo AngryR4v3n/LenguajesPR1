@@ -89,15 +89,15 @@ def simulator(automata, isNfa):
         else:
             print("no")
 
-main()
+#main()
 def test():
     postfixer = Postfixer()
-    postfixRegex = postfixer.to_postfix("((1?)*)*")
+    postfixRegex = postfixer.to_postfix("(a|b)*abb")
     builder = Builder(postfixRegex)
     #paso de generar tokens
     builder.generator()
     #array de tokens devuelto por
     tokens = builder.getTokenArr()
     parser = Parser()
-    parser.parse(tokens, "Thompson", False)
-#test()
+    parser.parse(tokens, "AFD", True)
+test()

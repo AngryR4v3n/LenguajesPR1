@@ -22,10 +22,9 @@ class AFD:
             self.tree_to_stack(tree.left, res=res)
         if tree.right:
             self.tree_to_stack(tree.right, res=res)
-        
-        
       
         return res
+        
     def fix_tokens(self,tokens):
         new_tokens = []
         popNext = False
@@ -126,7 +125,6 @@ class AFD:
 
         
         self.translator = translator
-        #table = self.translate_table(table, stackTree)
         self.table = table
 
         
@@ -197,8 +195,8 @@ class AFD:
                             createState = Transition(start=toState.get_end(), transition=letter, end=res)
                             createState.set_index(counter)
                             counter += 1 
-                            
-                            self.fn.append(createState)
+                            if not self.check_existence(createState):
+                                self.fn.append(createState)
                 else:
                     continue
         
@@ -236,10 +234,12 @@ class AFD:
         return False
 
 
-    def return_dfa_by_start(self, start):
+    def check_existence(self, transition):
         for existing in self.fn:
-            if start == existing.get_start():
-                return existing
+            if transition == existing:
+                return True
+
+        return False
             
     def is_over(self, dfa):
         counter = 0

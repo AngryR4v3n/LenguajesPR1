@@ -79,24 +79,6 @@ class PowerSet:
         return list(set(e_set))
 
     
-    def search_by_start(self, arrState):
-        tobechanged = []
-        for state in self.fn:
-            for otherState in arrState:
-                if otherState == state.get_start():
-                    tobechanged.append(state)
-        
-        return tobechanged
-
-    
-    def mark_states(self, arrState, dismark):
-        
-        tobechanged = self.search_by_start(arrState)
-        for state in tobechanged:
-            state.set_mark(dismark)
-
-        return arrState
-
     def traverse(self, state, letter):
         toReturn = []
         for i in state:

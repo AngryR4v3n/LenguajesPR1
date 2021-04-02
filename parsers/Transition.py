@@ -41,6 +41,9 @@ class Transition:
 
     def __repr__(self):
         return f'<Transition from: {self.start} to {self.end} through {self.transition}>'
+
+    def __eq__(self, other):
+        return self.start == other.start and self.end == other.end and self.transition == other.transition
     
 
 
