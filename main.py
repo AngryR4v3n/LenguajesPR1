@@ -92,7 +92,7 @@ def simulator(automata, isNfa):
 #main()
 def test():
     postfixer = Postfixer()
-    postfixRegex = postfixer.to_postfix("(a|b)*abb")
+    postfixRegex = postfixer.to_postfix("((a|b)*abb).#")
     builder = Builder(postfixRegex)
     #paso de generar tokens
     builder.generator()

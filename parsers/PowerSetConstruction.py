@@ -41,8 +41,7 @@ class PowerSet:
         for trans in self.newfn:
             if str(trans.get_start()) not in diction.keys():
                 diction[str(trans.get_start())] = vocab[trans.index]
-            if str(trans.get_end()) not in diction.keys():
-                diction[str(trans.get_end())] = vocab[trans.index]
+            
         #iteramos otra vez para traducir
         for trans in self.newfn:
             trans.set_start(diction[str(trans.get_start())])
@@ -133,7 +132,7 @@ class PowerSet:
                             toPush_arr = Transition(start=toState.get_end(), transition=letter, end=closure)
                             toPush_arr.set_index(counter)
                             counter += 1 
-                            if self.final in toPush_arr.get_end():
+                            if self.final in toPush_arr.get_start():
                                 toPush_arr.set_final(True)
                                 self.finalDFA.append(toPush_arr)
                             
@@ -148,8 +147,8 @@ class PowerSet:
                             counter += 1 
                             if self.final in createState.get_start():
                                 createState.set_final(True)
-                            
-                            self.newfn.append(createState)
+                            if not self.check_existence(createState):
+                                self.newfn.append(createState)
             
         
         is_over = self.is_over(check)
@@ -187,13 +186,12 @@ class PowerSet:
                     return existing.get_end()
         return None
 
-    def search_nfa_state(self, relations):
-        answer = []
-        for existing in self.fn:
-            for nfa_st in relations:
-                if existing.get_start() == relation:
-                    answer.append(existing)
-        return answer
+    def check_existence(self, transition):
+        for existing in self.newfn:
+            if transition == existing:
+                return True
+
+        return False
         
     def get_traversal(self, arr, letter):
         answer = []

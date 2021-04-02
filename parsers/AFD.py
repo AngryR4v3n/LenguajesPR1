@@ -63,7 +63,7 @@ class AFD:
         st.reverse()
         self.initial = st[0].first_pos
         self.createDFA(tokens)
-        self.translate()
+        #self.translate()
         
         #print("STATES", self.fn)
         initial = self.fn[0]
@@ -81,6 +81,11 @@ class AFD:
         vocab = vocabulary()
         diction = {}
         #iteramos para armar diccionario
+        numb = len(self.fn) - len(vocab) #un numero 30 digamos
+        if numb > 0:
+            for num in range(numb):
+                vocab.append("Z"+str(num))
+
         for trans in self.fn:
             if str(trans.get_start()) not in diction.keys():
                 if trans.index != None:
